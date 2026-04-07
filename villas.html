@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<!-- saved from url=(0037)https://pauliusjd.github.io/personal/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🇮🇹 Sicily Villa Hunt · May 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./villas_files/css2" rel="stylesheet">
+<style>
+:root {
+  --bg: #080c14;
+  --surface: #0f1623;
+  --surface2: #18202f;
+  --border: #232d40;
+  --text: #eef2f8;
+  --muted: #7a8a9e;
+  --accent: #f0a500;
+  --accent-dim: rgba(240,165,0,0.12);
+  --green: #22c55e;
+  --red: #f87171;
+  --airbnb: #ff385c;
+  --vrbo: #2563eb;
+  --agency: #9333ea;
+  --r: 14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+/* ─── HERO ─── */
+.hero{
+  background:linear-gradient(160deg,#050812 0%,#0d1a3a 45%,#0a1f2e 100%);
+  padding:72px 24px 52px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(240,165,0,.07) 0%,transparent 70%);
+}
+.hero::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(240,165,0,.3),transparent);
+}
+.hero-flag{font-size:52px;margin-bottom:20px;display:block;filter:drop-shadow(0 0 30px rgba(240,165,0,.4))}
+.hero h1{
+  font-size:clamp(38px,7vw,76px);font-weight:900;
+  letter-spacing:-3px;line-height:1;margin-bottom:16px;
+  background:linear-gradient(135deg,#fff 30%,var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{font-size:18px;color:var(--muted);margin-bottom:36px;font-weight:400}
+.pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.pill{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+  border-radius:100px;padding:9px 18px;font-size:13px;font-weight:500;
+  display:flex;align-items:center;gap:7px;
+}
+.pill span{opacity:.5}
+
+/* ─── CONTROLS ─── */
+.controls{max-width:1380px;margin:0 auto;padding:32px 24px 16px;display:flex;flex-direction:column;gap:14px}
+.ctrl-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ctrl-label{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);width:44px;flex-shrink:0}
+.fbtn{
+  background:var(--surface);border:1px solid var(--border);color:var(--muted);
+  border-radius:100px;padding:7px 16px;font-size:13px;font-weight:500;
+  cursor:pointer;transition:.2s;font-family:inherit;
+}
+.fbtn:hover{border-color:rgba(240,165,0,.4);color:var(--text)}
+.fbtn.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.sbtn{
+  background:var(--surface);border:1px solid var(--border);color:var(--muted);
+  border-radius:8px;padding:7px 14px;font-size:13px;font-weight:500;
+  cursor:pointer;transition:.2s;font-family:inherit;
+}
+.sbtn.on{background:var(--surface2);color:var(--text);border-color:rgba(255,255,255,.15)}
+
+/* ─── RESULTS BAR ─── */
+.rbar{max-width:1380px;margin:0 auto;padding:8px 24px 20px;display:flex;justify-content:space-between;align-items:center}
+.rcount{font-size:13px;color:var(--muted)}
+.rcount strong{color:var(--text)}
+.legend{display:flex;gap:14px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%}
+
+/* ─── GRID ─── */
+.grid{
+  max-width:1380px;margin:0 auto;padding:0 24px 120px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:22px;
+}
+
+/* ─── CARD ─── */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;
+  transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s,border-color .3s;
+  position:relative;display:flex;flex-direction:column;
+}
+.card:hover{transform:translateY(-5px);box-shadow:0 24px 70px rgba(0,0,0,.5);border-color:rgba(240,165,0,.25)}
+.card.hidden{display:none}
+
+/* CARD IMAGE */
+.cimg{position:relative;height:218px;overflow:hidden;flex-shrink:0}
+.cimg img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.card:hover .cimg img{transform:scale(1.07)}
+.cimg-ov{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 35%,rgba(4,9,20,.75))}
+.rank{
+  position:absolute;top:13px;left:13px;
+  background:var(--accent);color:#000;font-weight:900;font-size:12px;
+  width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+}
+.pbadge{
+  position:absolute;top:13px;right:13px;
+  padding:4px 11px;border-radius:100px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;
+}
+.pbadge.airbnb{background:var(--airbnb);color:#fff}
+.pbadge.vrbo{background:var(--vrbo);color:#fff}
+.pbadge.agency{background:var(--agency);color:#fff}
+.sbadge{
+  position:absolute;bottom:13px;left:13px;
+  background:rgba(4,9,20,.75);backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.1);border-radius:100px;
+  padding:4px 11px;font-size:11px;font-weight:600;color:var(--accent);
+}
+.vbtn{
+  position:absolute;bottom:13px;right:13px;
+  background:rgba(4,9,20,.65);backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.12);border-radius:100px;
+  padding:6px 13px;font-size:12px;font-weight:600;color:var(--text);
+  cursor:pointer;transition:.2s;display:flex;align-items:center;gap:5px;
+}
+.vbtn:hover{background:rgba(255,56,92,.15);border-color:var(--airbnb)}
+.vbtn.on{background:rgba(255,56,92,.18);border-color:var(--airbnb);color:var(--airbnb)}
+
+/* CARD BODY */
+.cbody{padding:20px;flex:1;display:flex;flex-direction:column;gap:0}
+.cloc{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px}
+.cname{font-size:18px;font-weight:800;line-height:1.25;margin-bottom:3px}
+.csub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.4}
+.cmeta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.cmeta-i{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px}
+.stars{color:var(--accent)}
+
+/* DATE NOTE */
+.dnote{
+  font-size:12px;background:rgba(240,165,0,.08);border:1px solid rgba(240,165,0,.2);
+  border-radius:8px;padding:7px 11px;color:var(--accent);margin-bottom:12px;line-height:1.4;
+}
+
+/* PRICE */
+.cprice{display:flex;align-items:baseline;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.price-orig{font-size:15px;color:var(--muted);text-decoration:line-through}
+.price-total{font-size:30px;font-weight:900;color:var(--green)}
+.price-nt{font-size:12px;color:var(--muted);margin-left:auto;align-self:center}
+.over-tag{font-size:10px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);color:var(--red);border-radius:100px;padding:2px 9px}
+
+/* TAGS */
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.tag{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:11px;color:var(--muted)}
+.tag.g{background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.2);color:var(--green)}
+
+/* WHY */
+.why-wrap{margin-top:auto}
+.why-btn{
+  background:none;border:none;color:var(--accent);font-size:12px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;padding:0;
+}
+.why-txt{
+  display:none;margin-top:11px;padding:13px;
+  background:var(--surface2);border-radius:10px;border-left:3px solid var(--accent);
+  font-size:13px;color:var(--muted);line-height:1.65;
+}
+.why-txt.open{display:block}
+
+/* CARD FOOTER */
+.cfoot{padding:0 20px 20px}
+.book-btn{
+  display:block;width:100%;background:var(--accent);color:#000;
+  border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:800;
+  cursor:pointer;text-decoration:none;text-align:center;transition:.2s;font-family:inherit;
+}
+.book-btn:hover{background:#fbbf24;transform:translateY(-1px)}
+
+/* ─── FAV BAR ─── */
+.favbar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(8,12,20,.94);backdrop-filter:blur(24px);
+  border-top:1px solid var(--border);
+  padding:14px 24px;display:flex;align-items:center;gap:16px;
+  transform:translateY(100%);transition:transform .35s cubic-bezier(.2,.8,.2,1);
+  z-index:200;
+}
+.favbar.show{transform:translateY(0)}
+.fav-lbl{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.fav-items{display:flex;gap:8px;flex-wrap:wrap;flex:1}
+.fav-chip{
+  background:rgba(255,56,92,.12);border:1px solid rgba(255,56,92,.3);
+  color:#ff6b8a;padding:4px 12px;border-radius:100px;font-size:12px;font-weight:600;
+}
+.fav-clear{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s}
+.fav-clear:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  .grid{grid-template-columns:1fr;padding:0 16px 120px}
+  .hero{padding:56px 20px 40px}
+  .hero h1{letter-spacing:-2px}
+  .controls,.rbar{padding-left:16px;padding-right:16px}
+  .ctrl-label{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-flag">🇮🇹</span>
+  <h1>Sicily Villa Hunt</h1>
+  <p class="hero-sub">20 villas. One trip. You pick.</p>
+  <div class="pills">
+    <div class="pill"><span>📅</span> May 4–12, 2026 · 8 nights</div>
+    <div class="pill"><span>👥</span> 6 adults + 1 infant</div>
+    <div class="pill"><span>🛏️</span> 3+ bedrooms</div>
+    <div class="pill"><span>🏊</span> Private pool required</div>
+    <div class="pill"><span>📍</span> South Sicily</div>
+    
+  </div>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="ctrl-row">
+    <span class="ctrl-label">Area</span>
+    <button class="fbtn on" onclick="setFilter(this,&#39;area&#39;,&#39;all&#39;)">All areas</button>
+    <button class="fbtn" onclick="setFilter(this,&#39;area&#39;,&#39;ragusa&#39;)">📍 Ragusa / Marina</button>
+    <button class="fbtn" onclick="setFilter(this,&#39;area&#39;,&#39;scicli&#39;)">🏛️ Scicli</button>
+    <button class="fbtn" onclick="setFilter(this,&#39;area&#39;,&#39;noto&#39;)">🍋 Noto / Avola</button>
+    <button class="fbtn" onclick="setFilter(this,&#39;area&#39;,&#39;siracusa&#39;)">⚓ Syracuse coast</button>
+    <button class="fbtn" onclick="setFilter(this,&#39;area&#39;,&#39;other&#39;)">🗺️ Other</button>
+  </div>
+  <div class="ctrl-row">
+    <span class="ctrl-label">Beds</span>
+    <button class="fbtn on" onclick="setFilter(this,&#39;beds&#39;,&#39;all&#39;)">All</button>
+    <button class="fbtn" onclick="setFilter(this,&#39;beds&#39;,&#39;3&#39;)">3 bedrooms</button>
+    <button class="fbtn" onclick="setFilter(this,&#39;beds&#39;,&#39;4&#39;)">4 bedrooms</button>
+    <button class="fbtn" onclick="setFilter(this,&#39;beds&#39;,&#39;5&#39;)">5+ bedrooms</button>
+  </div>
+  <div class="ctrl-row">
+    <span class="ctrl-label">Sort</span>
+    <button class="sbtn on" id="s-price" onclick="setSort(this,&#39;price&#39;)">💰 Price</button>
+    <button class="sbtn" id="s-rating" onclick="setSort(this,&#39;rating&#39;)">⭐ Rating</button>
+    <button class="sbtn" id="s-votes" onclick="setSort(this,&#39;votes&#39;)">❤️ Group votes</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="rbar">
+  <div class="rcount">Showing <strong id="rnum">20</strong> villas</div>
+  <div class="legend">
+    <div class="leg"><div class="dot" style="background:var(--airbnb)"></div>Airbnb</div>
+    <div class="leg"><div class="dot" style="background:var(--vrbo)"></div>VRBO</div>
+    <div class="leg"><div class="dot" style="background:var(--agency)"></div>Italian agency</div>
+  </div>
+</div>
+
+<!-- GRID -->
+<div class="grid" id="grid">
+    <div class="card" data-id="1" data-area="noto" data-beds="4">
+      <div class="cimg">
+        <img src="./villas_files/photo-1600596542815-ffad4c1539a9" alt="Il Primo Fiore" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#1</div>
+        <div class="pbadge airbnb">AIRBNB</div>
+        <div class="sbadge">🏅 Most Reviewed</div>
+        <button class="vbtn " onclick="vote(1,&#39;Il Primo Fiore&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Noto</div>
+        <div class="cname">Il Primo Fiore</div>
+        <div class="csub">Private villa overlooking Noto</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 4 beds</span>
+          <span class="cmeta-i">👥 Sleeps 6</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 4.94 (72)</span>
+        </div>
+        <div class="dnote">⚠️ Available May 5–9 only (4 nights — dates slightly shorter)</div>
+        <div class="cprice">
+      
+      <span class="price-total">€1,569</span>
+      
+      <span class="price-nt">≈ €196/night</span>
+    </div>
+        <div class="tags"><span class="tag">72 reviews</span><span class="tag">Panoramic Noto view</span><span class="tag">4 beds</span><span class="tag">Pool</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(1,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why1">72 reviews at ⭐4.94 — the most honest trust signal on the entire list. That's more community feedback than any other Noto option we found. The villa sits on a hillside with views over one of the most beautiful baroque towns in the world. Dates are May 5–9 instead of 4–12, so you'd need a plan for the first/last night — but if Noto is on the group's wish list, nothing else compares.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.airbnb.com/s/Noto--Sicily--Italy/homes?checkin=2026-05-04&amp;checkout=2026-05-12&amp;adults=6&amp;infants=1&amp;amenities%5B%5D=7&amp;min_bedrooms=3" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="3" data-area="noto" data-beds="3">
+      <div class="cimg">
+        <img src="./villas_files/photo-1564501049412-61c2a3083791" alt="Noto Swimming Pool Villa" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#3</div>
+        <div class="pbadge agency">Agency</div>
+        
+        <button class="vbtn " onclick="vote(3,&#39;Noto Swimming Pool Villa&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Noto area</div>
+        <div class="cname">Noto Swimming Pool Villa</div>
+        <div class="csub">3-bed private villa · Italian agency direct</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 3 beds</span>
+          <span class="cmeta-i">👥 Sleeps 6</span>
+          <span class="cmeta-i"><span style="color:var(--muted)">New listing</span></span>
+        </div>
+        <div class="dnote">📞 Contact Soprano Villas directly for May exact pricing</div>
+        <div class="cprice">
+      
+      <span class="price-total">€1,680</span>
+      
+      <span class="price-nt">≈ €210/night</span>
+    </div>
+        <div class="tags"><span class="tag">No platform fee</span><span class="tag">Italian agency</span><span class="tag">Near UNESCO Noto</span><span class="tag">3 beds</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(3,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why3">Booked directly through Soprano Villas — an Italian specialist agency — which means zero Airbnb or VRBO platform fee. That fee usually adds €150–400 on top of the property rate. Three bedrooms, private pool, walking distance to UNESCO-listed Noto, starting from €1,680/week. May shoulder-season pricing is often negotiable. Worth a direct email or call before going through a platform.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.sopranovillas.com/property/noto-swimming-pool-villa/" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="2" data-area="other" data-beds="4">
+      <div class="cimg">
+        <img src="./villas_files/photo-1582268611958-ebfd161ef9cf" alt="Villa Renzo" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#2</div>
+        <div class="pbadge vrbo">VRBO</div>
+        <div class="sbadge">💛 Loved by Guests</div>
+        <button class="vbtn " onclick="vote(2,&#39;Villa Renzo&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 South Sicily</div>
+        <div class="cname">Villa Renzo</div>
+        <div class="csub">Four Bedroom Villa · Sleeps 8</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 4 beds</span>
+          <span class="cmeta-i">👥 Sleeps 8</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 10/10 (19)</span>
+        </div>
+        
+        <div class="cprice">
+      
+      <span class="price-total">€1,760</span>
+      
+      <span class="price-nt">≈ €220/night</span>
+    </div>
+        <div class="tags"><span class="tag">10/10 rating</span><span class="tag">All fees included</span><span class="tag">Loved by Guests</span><span class="tag">4 beds</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(2,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why2">A 10/10 rating with 19 reviews doesn't happen by accident — every single guest gave maximum score. VRBO's 'Loved by Guests' badge is their highest recognition. Best price-per-night on the VRBO shortlist, 4 full bedrooms, private pool, and all platform fees already included in that €1,760. The strongest argument on the entire list for any budget-conscious group.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.vrbo.com/search?minBedrooms=3&amp;destination=Sicily+South+Coast%2C+Sicily%2C+Italy&amp;startDate=2026-05-04&amp;endDate=2026-05-12&amp;adults=6&amp;children=1_0&amp;amenities_facilities_group=pool" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="4" data-area="ragusa" data-beds="4">
+      <div class="cimg">
+        <img src="./villas_files/photo-1566073771259-470c083ef5fb" alt="Villa Palma" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#4</div>
+        <div class="pbadge airbnb">AIRBNB</div>
+        <div class="sbadge">🏷️ Discounted</div>
+        <button class="vbtn " onclick="vote(4,&#39;Villa Palma&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Marina di Ragusa</div>
+        <div class="cname">Villa Palma</div>
+        <div class="csub">Superhost · Marina di Ragusa</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 4 beds</span>
+          <span class="cmeta-i">👥 Sleeps 6</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 4.62 (29)</span>
+        </div>
+        
+        <div class="cprice">
+      <span class="price-orig">€2,185</span>
+      <span class="price-total">€1,968</span>
+      
+      <span class="price-nt">≈ €246/night</span>
+    </div>
+        <div class="tags"><span class="tag">Discounted</span><span class="tag">Beach town</span><span class="tag">Superhost</span><span class="tag">4 beds</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(4,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why4">Marina di Ragusa is the beach town that unlocks south Sicily — you're walking to the sea and 20 minutes from Ragusa Ibla, Modica, and Scicli. Superhost badge means fast communication and a host who takes this seriously. Already down from €2,185 to €1,968. 4 bedrooms for 6 adults means solid personal space for everyone.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&amp;checkout=2026-05-12&amp;adults=6&amp;infants=1&amp;amenities%5B%5D=7&amp;min_bedrooms=3" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="5" data-area="ragusa" data-beds="3">
+      <div class="cimg">
+        <img src="./villas_files/photo-1599484284330-2268a10ef66d" alt="Exclusive Pool Home" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#5</div>
+        <div class="pbadge airbnb">AIRBNB</div>
+        <div class="sbadge">✓ Free Cancellation</div>
+        <button class="vbtn " onclick="vote(5,&#39;Exclusive Pool Home&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Marina di Ragusa</div>
+        <div class="cname">Exclusive Pool Home</div>
+        <div class="csub">Free cancellation · Pay nothing today</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 3 beds</span>
+          <span class="cmeta-i">👥 Sleeps 6</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 4.93 (14)</span>
+        </div>
+        
+        <div class="cprice">
+      
+      <span class="price-total">€1,980</span>
+      
+      <span class="price-nt">≈ €248/night</span>
+    </div>
+        <div class="tags"><span class="tag">Free cancellation</span><span class="tag">Pay €0 now</span><span class="tag">⭐4.93</span><span class="tag">Marina di Ragusa</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(5,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why5">The no-risk strategy: book this one now while the group keeps debating. Free cancellation, you pay nothing today, ⭐4.93 in Marina di Ragusa. If a better option comes up — cancel this one. If not — you're sorted. It's the group's safety net. Think of it as a bookmark you can undo.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&amp;checkout=2026-05-12&amp;adults=6&amp;infants=1&amp;amenities%5B%5D=7&amp;min_bedrooms=3" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="6" data-area="scicli" data-beds="3">
+      <div class="cimg">
+        <img src="./villas_files/photo-1448630564403-6ea90f8f7068" alt="Villa Filara" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#6</div>
+        <div class="pbadge airbnb">AIRBNB</div>
+        
+        <button class="vbtn " onclick="vote(6,&#39;Villa Filara&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Scicli</div>
+        <div class="cname">Villa Filara</div>
+        <div class="csub">Classic Scicli villa · 36 reviews</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 3 beds</span>
+          <span class="cmeta-i">👥 Sleeps 6</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 4.97 (36)</span>
+        </div>
+        <div class="dnote">⚠️ Available May 4–10 only (6 nights instead of 8)</div>
+        <div class="cprice">
+      
+      <span class="price-total">€2,061</span>
+      
+      <span class="price-nt">≈ €344/night</span>
+    </div>
+        <div class="tags"><span class="tag">Scicli UNESCO town</span><span class="tag">⭐4.97 rating</span><span class="tag">3 beds</span><span class="tag">Pool</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(6,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why6">⭐4.97 with 36 solid reviews in one of Sicily's most authentic and photogenic towns. Scicli appeared in Inspector Montalbano — and the baroque architecture is genuinely stunning. Available May 4–10 (6 nights), so you'd need to plan the last 2 nights elsewhere or adjust dates. But the quality-to-price ratio here is very hard to beat.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&amp;checkout=2026-05-12&amp;adults=6&amp;infants=1&amp;amenities%5B%5D=7&amp;min_bedrooms=3" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="7" data-area="scicli" data-beds="5">
+      <div class="cimg">
+        <img src="./villas_files/photo-1607082348824-0a96f2a4b9da" alt="Villa Palazzola" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#7</div>
+        <div class="pbadge vrbo">VRBO</div>
+        
+        <button class="vbtn " onclick="vote(7,&#39;Villa Palazzola&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Near Scicli</div>
+        <div class="cname">Villa Palazzola</div>
+        <div class="csub">Five Bedrooms · Sleeps 12 · VRBO</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 5 beds</span>
+          <span class="cmeta-i">👥 Sleeps 12</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 9.8/10 (20)</span>
+        </div>
+        
+        <div class="cprice">
+      
+      <span class="price-total">€2,096</span>
+      
+      <span class="price-nt">≈ €262/night</span>
+    </div>
+        <div class="tags"><span class="tag">5 bedrooms / sleeps 12</span><span class="tag">9.8/10 VRBO</span><span class="tag">Room for everyone</span><span class="tag">All fees included</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(7,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why7">5 bedrooms for 6 adults. That means the infant gets an entirely separate room, everyone else has a private room with zero sharing, and there's still a spare. Rated 9.8/10 on VRBO with 20 verified reviews. Near Scicli, all fees included in the price. If personal space is non-negotiable for the group, this is the clear winner.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.vrbo.com/search?minBedrooms=3&amp;destination=Sicily+South+Coast%2C+Sicily%2C+Italy&amp;startDate=2026-05-04&amp;endDate=2026-05-12&amp;adults=6&amp;children=1_0&amp;amenities_facilities_group=pool" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="8" data-area="ragusa" data-beds="5">
+      <div class="cimg">
+        <img src="./villas_files/photo-1616047006789-b7af5afb8c20" alt="Villa Cutalia" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#8</div>
+        <div class="pbadge airbnb">AIRBNB</div>
+        <div class="sbadge">🏅 Guest Favorite</div>
+        <button class="vbtn " onclick="vote(8,&#39;Villa Cutalia&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Ragusa</div>
+        <div class="cname">Villa Cutalia</div>
+        <div class="csub">Guest Favorite · 56 reviews · Pool</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 5 beds</span>
+          <span class="cmeta-i">👥 Sleeps 7</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 4.96 (56)</span>
+        </div>
+        
+        <div class="cprice">
+      
+      <span class="price-total">€2,130</span>
+      
+      <span class="price-nt">≈ €266/night</span>
+    </div>
+        <div class="tags"><span class="tag">56 reviews</span><span class="tag">Most reviewed &lt;€2,500</span><span class="tag">5 beds</span><span class="tag">Guest Favorite</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(8,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why8">56 reviews at ⭐4.96 — the most-reviewed villa under €2,500 on this entire list. Airbnb's Guest Favorite badge goes to the top 10% of listings globally. 5 bedrooms in Ragusa province puts you minutes from Ragusa Ibla and the baroque Val di Noto circuit. This is the safest large-group booking on the list — numbers don't lie at that review count.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&amp;checkout=2026-05-12&amp;adults=6&amp;infants=1&amp;amenities%5B%5D=7&amp;min_bedrooms=3" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="9" data-area="scicli" data-beds="3">
+      <div class="cimg">
+        <img src="./villas_files/photo-1531971589569-0d9370cbe1e5" alt="Sterlizia" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#9</div>
+        <div class="pbadge airbnb">AIRBNB</div>
+        <div class="sbadge">✓ Free Cancellation</div>
+        <button class="vbtn " onclick="vote(9,&#39;Sterlizia&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Scicli</div>
+        <div class="cname">Sterlizia</div>
+        <div class="csub">Superhost · Perfect score · Scicli</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 3 beds</span>
+          <span class="cmeta-i">👥 Sleeps 5</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 5 (4)</span>
+        </div>
+        
+        <div class="cprice">
+      <span class="price-orig">€2,458</span>
+      <span class="price-total">€2,167</span>
+      
+      <span class="price-nt">≈ €271/night</span>
+    </div>
+        <div class="tags"><span class="tag">⭐5.0 perfect</span><span class="tag">Superhost</span><span class="tag">Free cancellation</span><span class="tag">Discounted €291</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(9,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why9">Perfect ⭐5.0 score with a Superhost badge in Scicli. Yes, 4 reviews is a small sample — but all 4 are maximum score with zero disappointments. These are the early adopter reviews: the host cares deeply, the property is fresh, and the quality is consistent. Free cancellation. Discounted from €2,458 to €2,167. The kind of gem that fills up as word spreads.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&amp;checkout=2026-05-12&amp;adults=6&amp;infants=1&amp;amenities%5B%5D=7&amp;min_bedrooms=3" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="10" data-area="scicli" data-beds="5">
+      <div class="cimg">
+        <img src="./villas_files/photo-1520250495-4bfd9e7fb800" alt="Villa Palazzola" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#10</div>
+        <div class="pbadge airbnb">AIRBNB</div>
+        <div class="sbadge">🏷️ Discounted</div>
+        <button class="vbtn " onclick="vote(10,&#39;Villa Palazzola&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Scicli</div>
+        <div class="cname">Villa Palazzola</div>
+        <div class="csub">5 bedrooms · Scicli · Airbnb</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 5 beds</span>
+          <span class="cmeta-i">👥 Sleeps 7</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 4.92 (25)</span>
+        </div>
+        
+        <div class="cprice">
+      <span class="price-orig">€2,831</span>
+      <span class="price-total">€2,224</span>
+      
+      <span class="price-nt">≈ €278/night</span>
+    </div>
+        <div class="tags"><span class="tag">Discounted 21%</span><span class="tag">5 beds / 7 people</span><span class="tag">Scicli UNESCO</span><span class="tag">⭐4.92</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(10,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why10">Down 21% from €2,831 to €2,224 — that's a €607 saving at the same quality. ⭐4.92 with 25 reviews. 5 bedrooms mean the infant gets its own room easily, everyone else sleeps comfortably. Scicli is arguably the most beautiful and least touristy town in the Val di Noto. Great for culture-focused groups who don't want to compete with crowds.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&amp;checkout=2026-05-12&amp;adults=6&amp;infants=1&amp;amenities%5B%5D=7&amp;min_bedrooms=3" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="11" data-area="noto" data-beds="3">
+      <div class="cimg">
+        <img src="./villas_files/photo-1439405526976-ea3ce870af0f" alt="Trappeto Dellago" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#11</div>
+        <div class="pbadge airbnb">AIRBNB</div>
+        
+        <button class="vbtn " onclick="vote(11,&#39;Trappeto Dellago&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Avola (near Noto)</div>
+        <div class="cname">Trappeto Dellago</div>
+        <div class="csub">Sea view · Pool · Parking · Avola</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 3 beds</span>
+          <span class="cmeta-i">👥 Sleeps 5</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 4.97 (37)</span>
+        </div>
+        
+        <div class="cprice">
+      
+      <span class="price-total">€2,248</span>
+      
+      <span class="price-nt">≈ €281/night</span>
+    </div>
+        <div class="tags"><span class="tag">Sea view + pool</span><span class="tag">Parking included</span><span class="tag">Near UNESCO Noto</span><span class="tag">⭐4.97 / 37 reviews</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(11,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why11">Sea in front, Noto 10 minutes away, ⭐4.97 with 37 solid reviews. Avola is the world capital of Avola almonds — you'll drink the best almond wine of your life and not even know what hit you. Pool + sea view + parking + WiFi. Everything you need, nothing missing. One of the most complete packages under €2,300 on the list.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&amp;checkout=2026-05-12&amp;adults=6&amp;infants=1&amp;amenities%5B%5D=7&amp;min_bedrooms=3" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="12" data-area="noto" data-beds="4">
+      <div class="cimg">
+        <img src="./villas_files/photo-1628928783073-2a0ce4a1d22d" alt="Villa Janco" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#12</div>
+        <div class="pbadge airbnb">AIRBNB</div>
+        <div class="sbadge">🏷️ Discounted</div>
+        <button class="vbtn " onclick="vote(12,&#39;Villa Janco&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Noto</div>
+        <div class="cname">Villa Janco</div>
+        <div class="csub">Countryside villa · Noto area</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 4 beds</span>
+          <span class="cmeta-i">👥 Sleeps 6</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 5 (4)</span>
+        </div>
+        <div class="dnote">⚠️ Available May 5–12 (starts one day late — need a plan for night 1)</div>
+        <div class="cprice">
+      <span class="price-orig">€2,613</span>
+      <span class="price-total">€2,393</span>
+      
+      <span class="price-nt">≈ €299/night</span>
+    </div>
+        <div class="tags"><span class="tag">Perfect ⭐5.0</span><span class="tag">Discounted</span><span class="tag">4 beds</span><span class="tag">Noto countryside</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(12,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why12">Perfect ⭐5.0 score in the Noto countryside, discounted from €2,613 to €2,393. 4 bedrooms. The one catch: it's available May 5–12, meaning you'd need a hotel or different spot for May 4. For a group that can manage one flexible night, this is genuinely one of the best-quality stays in the Noto area at this price point.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.airbnb.com/s/Noto--Sicily--Italy/homes?checkin=2026-05-04&amp;checkout=2026-05-12&amp;adults=6&amp;infants=1&amp;amenities%5B%5D=7&amp;min_bedrooms=3" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="14" data-area="scicli" data-beds="5">
+      <div class="cimg">
+        <img src="./villas_files/photo-1571003123894-1f0594d2b5d9" alt="Casa Sekeles" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#14</div>
+        <div class="pbadge airbnb">AIRBNB</div>
+        <div class="sbadge">✓ Free Cancellation</div>
+        <button class="vbtn " onclick="vote(14,&#39;Casa Sekeles&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Scicli</div>
+        <div class="cname">Casa Sekeles</div>
+        <div class="csub">Between Olive Trees and the Sea · Scicli</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 5 beds</span>
+          <span class="cmeta-i">👥 Sleeps 6</span>
+          <span class="cmeta-i"><span style="color:var(--muted)">New listing</span></span>
+        </div>
+        
+        <div class="cprice">
+      <span class="price-orig">€3,040</span>
+      <span class="price-total">€2,644</span>
+      
+      <span class="price-nt">≈ €331/night</span>
+    </div>
+        <div class="tags"><span class="tag">5 beds</span><span class="tag">Free cancellation</span><span class="tag">Pay €0 today</span><span class="tag">Direct from owner</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(14,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why14">5 bedrooms between olive trees and the sea in Scicli — you pay nothing today and can cancel freely. Discounted from €3,040 to €2,644 with a weekly deal. Listed as an individual host, meaning you're communicating directly with the owner, not a faceless management company. More personal, more flexible, and in our experience, more honest about any quirks the place might have.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&amp;checkout=2026-05-12&amp;adults=6&amp;infants=1&amp;amenities%5B%5D=7&amp;min_bedrooms=3" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="13" data-area="ragusa" data-beds="3">
+      <div class="cimg">
+        <img src="./villas_files/photo-1558618666-fcd25c85cd64" alt="At Chica&#39;s House" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#13</div>
+        <div class="pbadge airbnb">AIRBNB</div>
+        
+        <button class="vbtn " onclick="vote(13,&#39;At Chica\&#39;s House&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Ragusa</div>
+        <div class="cname">At Chica's House</div>
+        <div class="csub">Perfect ⭐5.0 · 13 reviews · Ragusa</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 3 beds</span>
+          <span class="cmeta-i">👥 Sleeps 6</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 5 (13)</span>
+        </div>
+        
+        <div class="cprice">
+      
+      <span class="price-total">€2,658</span>
+      
+      <span class="price-nt">≈ €332/night</span>
+    </div>
+        <div class="tags"><span class="tag">⭐5.0 / 13 reviews</span><span class="tag">Personal host</span><span class="tag">Pool</span><span class="tag">Ragusa province</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(13,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why13">⭐5.0 with 13 reviews in Ragusa. Not a fluke — that's 13 consecutive five-star experiences. Small enough that the owner still cares about every guest personally. In Ragusa province, meaning Ragusa Ibla, Modica chocolate, and Scicli are all day-trip material. This is the authentic, personal experience that big property management companies can't replicate.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&amp;checkout=2026-05-12&amp;adults=6&amp;infants=1&amp;amenities%5B%5D=7&amp;min_bedrooms=3" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="15" data-area="ragusa" data-beds="3">
+      <div class="cimg">
+        <img src="./villas_files/photo-1600585154526-990dced4db0d" alt="Acquaterra Oasis" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#15</div>
+        <div class="pbadge airbnb">AIRBNB</div>
+        <div class="sbadge">🌟 Top Rated</div>
+        <button class="vbtn " onclick="vote(15,&#39;Acquaterra Oasis&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Sampieri</div>
+        <div class="cname">Acquaterra Oasis</div>
+        <div class="csub">Highest rated on list · Pool + Sea View</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 3 beds</span>
+          <span class="cmeta-i">👥 Sleeps 5</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 4.98 (46)</span>
+        </div>
+        
+        <div class="cprice">
+      <span class="price-orig">€2,945</span>
+      <span class="price-total">€2,705</span>
+      
+      <span class="price-nt">≈ €338/night</span>
+    </div>
+        <div class="tags"><span class="tag">⭐4.98 HIGHEST RATED</span><span class="tag">Pool + sea view</span><span class="tag">Sampieri village</span><span class="tag">46 reviews</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(15,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why15">The highest guest-rated villa on the entire list: ⭐4.98 with 46 reviews. Not a small sample. Not a fluke. Pool AND sea view in Sampieri — a tiny fishing village that's still largely off the tourist map, with some of the best seafood restaurants you'll ever stumble into. Weekly discount drops it from €2,945 to €2,705. If the group wants maximum quality and doesn't mind paying a little more, this is the answer.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&amp;checkout=2026-05-12&amp;adults=6&amp;infants=1&amp;amenities%5B%5D=7&amp;min_bedrooms=3" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="16" data-area="siracusa" data-beds="4">
+      <div class="cimg">
+        <img src="./villas_files/photo-1540541338537-e59be15d5f50" alt="Villa Livia" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#16</div>
+        <div class="pbadge airbnb">AIRBNB</div>
+        
+        <button class="vbtn " onclick="vote(16,&#39;Villa Livia&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Fontane Bianche</div>
+        <div class="cname">Villa Livia</div>
+        <div class="csub">Superhost · Fontane Bianche · Syracuse coast</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 4 beds</span>
+          <span class="cmeta-i">👥 Sleeps 6</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 4.74 (31)</span>
+        </div>
+        
+        <div class="cprice">
+      
+      <span class="price-total">€2,760</span>
+      
+      <span class="price-nt">≈ €345/night</span>
+    </div>
+        <div class="tags"><span class="tag">Fontane Bianche beach</span><span class="tag">4 beds / 6 beds total</span><span class="tag">Superhost</span><span class="tag">Syracuse area</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(16,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why16">Fontane Bianche is one of Sicily's most underrated beaches — crystal clear water, white sand, genuinely beautiful and calm in May. Superhost with 31 reviews. 4 bedrooms and 6 beds. Connects you to the Syracuse side of the island: the Greek Theatre, Ortygia island, the Ear of Dionysius. A different cultural experience from the Ragusa circuit, without paying city prices.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&amp;checkout=2026-05-12&amp;adults=6&amp;infants=1&amp;amenities%5B%5D=7&amp;min_bedrooms=3" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="17" data-area="ragusa" data-beds="4">
+      <div class="cimg">
+        <img src="./villas_files/photo-1531259169118-dae4e02c8a07" alt="Villa Nerissa" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#17</div>
+        <div class="pbadge airbnb">AIRBNB</div>
+        
+        <button class="vbtn " onclick="vote(17,&#39;Villa Nerissa&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Pozzallo</div>
+        <div class="cname">Villa Nerissa</div>
+        <div class="csub">Superhost · Pozzallo · 4 double beds</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 4 beds</span>
+          <span class="cmeta-i">👥 Sleeps 6</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 5 (3)</span>
+        </div>
+        
+        <div class="cprice">
+      
+      <span class="price-total">€2,824</span>
+      
+      <span class="price-nt">≈ €353/night</span>
+    </div>
+        <div class="tags"><span class="tag">⭐5.0 Superhost</span><span class="tag">4 double beds</span><span class="tag">Pozzallo sea town</span><span class="tag">Sea view</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(17,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why17">4 double beds means every adult has their own room and their own double bed — no one shares, no awkward arrangements, no compromises. Pozzallo is the southernmost town in Sicily, with a very local feel and zero tourists. Superhost, perfect ⭐5.0, sea view. Only 3 reviews means it's relatively new and still available for dates others have missed.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&amp;checkout=2026-05-12&amp;adults=6&amp;infants=1&amp;amenities%5B%5D=7&amp;min_bedrooms=3" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="18" data-area="other" data-beds="4">
+      <div class="cimg">
+        <img src="./villas_files/photo-1580587771525-78b9dba3b914" alt="Villa with Splendid Pool" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#18</div>
+        <div class="pbadge vrbo">VRBO</div>
+        <div class="sbadge">🏷️ Discounted</div>
+        <button class="vbtn " onclick="vote(18,&#39;Villa with Splendid Pool&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Near Selinunte</div>
+        <div class="cname">Villa with Splendid Pool</div>
+        <div class="csub">Near Selinunte · VRBO 10/10 · 4 beds</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 4 beds</span>
+          <span class="cmeta-i">👥 Sleeps 8</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 10/10 (12)</span>
+        </div>
+        
+        <div class="cprice">
+      <span class="price-orig">€3,379</span>
+      <span class="price-total">€2,969</span>
+      
+      <span class="price-nt">≈ €371/night</span>
+    </div>
+        <div class="tags"><span class="tag">10/10 VRBO rating</span><span class="tag">Greek ruins nearby</span><span class="tag">4 beds / sleeps 8</span><span class="tag">All fees included</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(18,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why18">10/10 on VRBO with 12 verified reviews — near-perfect, provably. Located near the ancient Greek ruins of Selinunte, one of the most dramatic and least crowded archaeological sites in the Mediterranean. 4 bedrooms, sleeps 8, all fees included. Discounted from $3,379 to $2,969. Slightly further west than Ragusa but the area is genuinely spectacular.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.vrbo.com/search?minBedrooms=3&amp;destination=Sicily+South+Coast%2C+Sicily%2C+Italy&amp;startDate=2026-05-04&amp;endDate=2026-05-12&amp;adults=6&amp;children=1_0&amp;amenities_facilities_group=pool" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="19" data-area="noto" data-beds="4">
+      <div class="cimg">
+        <img src="./villas_files/photo-1455587734955-081b22074882" alt="Villa Dama" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#19</div>
+        <div class="pbadge airbnb">AIRBNB</div>
+        
+        <button class="vbtn " onclick="vote(19,&#39;Villa Dama&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Avola</div>
+        <div class="cname">Villa Dama</div>
+        <div class="csub">Luxury Escape · Avola · ⭐4.9</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 4 beds</span>
+          <span class="cmeta-i">👥 Sleeps 6</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 4.9 (20)</span>
+        </div>
+        <div class="dnote">⚠️ Slightly over budget (€2 over). Split €0.29 per person.</div>
+        <div class="cprice">
+      
+      <span class="price-total">€3,002</span>
+      <span class="over-tag">slightly over €3k</span>
+      <span class="price-nt">≈ €375/night</span>
+    </div>
+        <div class="tags"><span class="tag">Airbnb Luxury label</span><span class="tag">4 beds</span><span class="tag">Avola</span><span class="tag">20 reviews</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(19,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why19">Exactly €2 over the €3,000 budget — that's €0.29 per person. ⭐4.9 with 20 reviews, Airbnb Luxury Escape designation, 4 bedrooms in Avola, and finishes that most properties at this price can't match. If the group agrees to split two euros, you're in a luxury-tagged property. We included it because the line between budget and luxury shouldn't be two euros.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&amp;checkout=2026-05-12&amp;adults=6&amp;infants=1&amp;amenities%5B%5D=7&amp;min_bedrooms=3" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div>
+    <div class="card" data-id="20" data-area="noto" data-beds="4">
+      <div class="cimg">
+        <img src="./villas_files/photo-1502672260266-1c1ef2d93688" alt="Freshly Renovated Villa" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#20</div>
+        <div class="pbadge airbnb">AIRBNB</div>
+        
+        <button class="vbtn " onclick="vote(20,&#39;Freshly Renovated Villa&#39;)">
+          🤍 Love it
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 Noto area</div>
+        <div class="cname">Freshly Renovated Villa</div>
+        <div class="csub">Large pool · Sea view · Noto area</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ 4 beds</span>
+          <span class="cmeta-i">👥 Sleeps 6</span>
+          <span class="cmeta-i"><span class="stars">★★★★★</span> 4.9 (31)</span>
+        </div>
+        <div class="dnote">⚠️ €108 over budget — €18 per person if split 6 ways.</div>
+        <div class="cprice">
+      
+      <span class="price-total">€3,108</span>
+      <span class="over-tag">slightly over €3k</span>
+      <span class="price-nt">≈ €389/night</span>
+    </div>
+        <div class="tags"><span class="tag">Brand new renovation</span><span class="tag">Sea view</span><span class="tag">Large pool</span><span class="tag">31 reviews already</span></div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(20,this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why20">Just renovated, yet already scoring ⭐4.9 with 31 reviews — the quality translated immediately. Large private pool, sea view, 4 bedrooms in the Noto area. €108 over budget total, which is €18 per person if split evenly. You get brand-new interiors without the risk of an untested property. The freshness factor matters when you're spending a week in a place.</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="https://www.airbnb.com/s/Noto--Sicily--Italy/homes?checkin=2026-05-04&amp;checkout=2026-05-12&amp;adults=6&amp;infants=1&amp;amenities%5B%5D=7&amp;min_bedrooms=3" target="_blank" class="book-btn">View &amp; Book →</a>
+      </div>
+    </div></div>
+
+<!-- FAVBAR -->
+<div class="favbar" id="favbar">
+  <span class="fav-lbl">❤️ Group's picks</span>
+  <div class="fav-items" id="fav-items"></div>
+  <button class="fav-clear" onclick="clearVotes()">Clear all</button>
+</div>
+
+<script>
+const VILLAS = [
+  {
+    id:1, rank:1,
+    name:"Il Primo Fiore",
+    sub:"Private villa overlooking Noto",
+    loc:"Noto", area:"noto", beds:4, sleeps:6,
+    rating:4.94, reviews:72,
+    price:1569, orig:null, ppn:196,
+    platform:"airbnb",
+    dnote:"⚠️ Available May 5–9 only (4 nights — dates slightly shorter)",
+    over:false,
+    tags:["72 reviews","Panoramic Noto view","4 beds","Pool"],
+    hl:"🏅 Most Reviewed",
+    img:"https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=700&h=460&fit=crop&q=80",
+    link:"https://www.airbnb.com/s/Noto--Sicily--Italy/homes?checkin=2026-05-04&checkout=2026-05-12&adults=6&infants=1&amenities%5B%5D=7&min_bedrooms=3",
+    why:"72 reviews at ⭐4.94 — the most honest trust signal on the entire list. That's more community feedback than any other Noto option we found. The villa sits on a hillside with views over one of the most beautiful baroque towns in the world. Dates are May 5–9 instead of 4–12, so you'd need a plan for the first/last night — but if Noto is on the group's wish list, nothing else compares."
+  },
+  {
+    id:2, rank:2,
+    name:"Villa Renzo",
+    sub:"Four Bedroom Villa · Sleeps 8",
+    loc:"South Sicily", area:"other", beds:4, sleeps:8,
+    rating:10, reviews:19,
+    price:1760, orig:null, ppn:220,
+    platform:"vrbo",
+    dnote:null, over:false,
+    tags:["10/10 rating","All fees included","Loved by Guests","4 beds"],
+    hl:"💛 Loved by Guests",
+    img:"https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=700&h=460&fit=crop&q=80",
+    link:"https://www.vrbo.com/search?minBedrooms=3&destination=Sicily+South+Coast%2C+Sicily%2C+Italy&startDate=2026-05-04&endDate=2026-05-12&adults=6&children=1_0&amenities_facilities_group=pool",
+    why:"A 10/10 rating with 19 reviews doesn't happen by accident — every single guest gave maximum score. VRBO's 'Loved by Guests' badge is their highest recognition. Best price-per-night on the VRBO shortlist, 4 full bedrooms, private pool, and all platform fees already included in that €1,760. The strongest argument on the entire list for any budget-conscious group."
+  },
+  {
+    id:3, rank:3,
+    name:"Noto Swimming Pool Villa",
+    sub:"3-bed private villa · Italian agency direct",
+    loc:"Noto area", area:"noto", beds:3, sleeps:6,
+    rating:null, reviews:null,
+    price:1680, orig:null, ppn:210,
+    platform:"agency",
+    dnote:"📞 Contact Soprano Villas directly for May exact pricing",
+    over:false,
+    tags:["No platform fee","Italian agency","Near UNESCO Noto","3 beds"],
+    hl:null,
+    img:"https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=700&h=460&fit=crop&q=80",
+    link:"https://www.sopranovillas.com/property/noto-swimming-pool-villa/",
+    why:"Booked directly through Soprano Villas — an Italian specialist agency — which means zero Airbnb or VRBO platform fee. That fee usually adds €150–400 on top of the property rate. Three bedrooms, private pool, walking distance to UNESCO-listed Noto, starting from €1,680/week. May shoulder-season pricing is often negotiable. Worth a direct email or call before going through a platform."
+  },
+  {
+    id:4, rank:4,
+    name:"Villa Palma",
+    sub:"Superhost · Marina di Ragusa",
+    loc:"Marina di Ragusa", area:"ragusa", beds:4, sleeps:6,
+    rating:4.62, reviews:29,
+    price:1968, orig:2185, ppn:246,
+    platform:"airbnb",
+    dnote:null, over:false,
+    tags:["Discounted","Beach town","Superhost","4 beds"],
+    hl:"🏷️ Discounted",
+    img:"https://images.unsplash.com/photo-1566073771259-470c083ef5fb?w=700&h=460&fit=crop&q=80",
+    link:"https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&checkout=2026-05-12&adults=6&infants=1&amenities%5B%5D=7&min_bedrooms=3",
+    why:"Marina di Ragusa is the beach town that unlocks south Sicily — you're walking to the sea and 20 minutes from Ragusa Ibla, Modica, and Scicli. Superhost badge means fast communication and a host who takes this seriously. Already down from €2,185 to €1,968. 4 bedrooms for 6 adults means solid personal space for everyone."
+  },
+  {
+    id:5, rank:5,
+    name:"Exclusive Pool Home",
+    sub:"Free cancellation · Pay nothing today",
+    loc:"Marina di Ragusa", area:"ragusa", beds:3, sleeps:6,
+    rating:4.93, reviews:14,
+    price:1980, orig:null, ppn:248,
+    platform:"airbnb",
+    dnote:null, over:false,
+    tags:["Free cancellation","Pay €0 now","⭐4.93","Marina di Ragusa"],
+    hl:"✓ Free Cancellation",
+    img:"https://images.unsplash.com/photo-1599484284330-2268a10ef66d?w=700&h=460&fit=crop&q=80",
+    link:"https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&checkout=2026-05-12&adults=6&infants=1&amenities%5B%5D=7&min_bedrooms=3",
+    why:"The no-risk strategy: book this one now while the group keeps debating. Free cancellation, you pay nothing today, ⭐4.93 in Marina di Ragusa. If a better option comes up — cancel this one. If not — you're sorted. It's the group's safety net. Think of it as a bookmark you can undo."
+  },
+  {
+    id:6, rank:6,
+    name:"Villa Filara",
+    sub:"Classic Scicli villa · 36 reviews",
+    loc:"Scicli", area:"scicli", beds:3, sleeps:6,
+    rating:4.97, reviews:36,
+    price:2061, orig:null, ppn:344,
+    platform:"airbnb",
+    dnote:"⚠️ Available May 4–10 only (6 nights instead of 8)",
+    over:false,
+    tags:["Scicli UNESCO town","⭐4.97 rating","3 beds","Pool"],
+    hl:null,
+    img:"https://images.unsplash.com/photo-1448630564403-6ea90f8f7068?w=700&h=460&fit=crop&q=80",
+    link:"https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&checkout=2026-05-12&adults=6&infants=1&amenities%5B%5D=7&min_bedrooms=3",
+    why:"⭐4.97 with 36 solid reviews in one of Sicily's most authentic and photogenic towns. Scicli appeared in Inspector Montalbano — and the baroque architecture is genuinely stunning. Available May 4–10 (6 nights), so you'd need to plan the last 2 nights elsewhere or adjust dates. But the quality-to-price ratio here is very hard to beat."
+  },
+  {
+    id:7, rank:7,
+    name:"Villa Palazzola",
+    sub:"Five Bedrooms · Sleeps 12 · VRBO",
+    loc:"Near Scicli", area:"scicli", beds:5, sleeps:12,
+    rating:9.8, reviews:20,
+    price:2096, orig:null, ppn:262,
+    platform:"vrbo",
+    dnote:null, over:false,
+    tags:["5 bedrooms / sleeps 12","9.8/10 VRBO","Room for everyone","All fees included"],
+    hl:null,
+    img:"https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=700&h=460&fit=crop&q=80",
+    link:"https://www.vrbo.com/search?minBedrooms=3&destination=Sicily+South+Coast%2C+Sicily%2C+Italy&startDate=2026-05-04&endDate=2026-05-12&adults=6&children=1_0&amenities_facilities_group=pool",
+    why:"5 bedrooms for 6 adults. That means the infant gets an entirely separate room, everyone else has a private room with zero sharing, and there's still a spare. Rated 9.8/10 on VRBO with 20 verified reviews. Near Scicli, all fees included in the price. If personal space is non-negotiable for the group, this is the clear winner."
+  },
+  {
+    id:8, rank:8,
+    name:"Villa Cutalia",
+    sub:"Guest Favorite · 56 reviews · Pool",
+    loc:"Ragusa", area:"ragusa", beds:5, sleeps:7,
+    rating:4.96, reviews:56,
+    price:2130, orig:null, ppn:266,
+    platform:"airbnb",
+    dnote:null, over:false,
+    tags:["56 reviews","Most reviewed <€2,500","5 beds","Guest Favorite"],
+    hl:"🏅 Guest Favorite",
+    img:"https://images.unsplash.com/photo-1616047006789-b7af5afb8c20?w=700&h=460&fit=crop&q=80",
+    link:"https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&checkout=2026-05-12&adults=6&infants=1&amenities%5B%5D=7&min_bedrooms=3",
+    why:"56 reviews at ⭐4.96 — the most-reviewed villa under €2,500 on this entire list. Airbnb's Guest Favorite badge goes to the top 10% of listings globally. 5 bedrooms in Ragusa province puts you minutes from Ragusa Ibla and the baroque Val di Noto circuit. This is the safest large-group booking on the list — numbers don't lie at that review count."
+  },
+  {
+    id:9, rank:9,
+    name:"Sterlizia",
+    sub:"Superhost · Perfect score · Scicli",
+    loc:"Scicli", area:"scicli", beds:3, sleeps:5,
+    rating:5.0, reviews:4,
+    price:2167, orig:2458, ppn:271,
+    platform:"airbnb",
+    dnote:null, over:false,
+    tags:["⭐5.0 perfect","Superhost","Free cancellation","Discounted €291"],
+    hl:"✓ Free Cancellation",
+    img:"https://images.unsplash.com/photo-1531971589569-0d9370cbe1e5?w=700&h=460&fit=crop&q=80",
+    link:"https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&checkout=2026-05-12&adults=6&infants=1&amenities%5B%5D=7&min_bedrooms=3",
+    why:"Perfect ⭐5.0 score with a Superhost badge in Scicli. Yes, 4 reviews is a small sample — but all 4 are maximum score with zero disappointments. These are the early adopter reviews: the host cares deeply, the property is fresh, and the quality is consistent. Free cancellation. Discounted from €2,458 to €2,167. The kind of gem that fills up as word spreads."
+  },
+  {
+    id:10, rank:10,
+    name:"Villa Palazzola",
+    sub:"5 bedrooms · Scicli · Airbnb",
+    loc:"Scicli", area:"scicli", beds:5, sleeps:7,
+    rating:4.92, reviews:25,
+    price:2224, orig:2831, ppn:278,
+    platform:"airbnb",
+    dnote:null, over:false,
+    tags:["Discounted 21%","5 beds / 7 people","Scicli UNESCO","⭐4.92"],
+    hl:"🏷️ Discounted",
+    img:"https://images.unsplash.com/photo-1520250495-4bfd9e7fb800?w=700&h=460&fit=crop&q=80",
+    link:"https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&checkout=2026-05-12&adults=6&infants=1&amenities%5B%5D=7&min_bedrooms=3",
+    why:"Down 21% from €2,831 to €2,224 — that's a €607 saving at the same quality. ⭐4.92 with 25 reviews. 5 bedrooms mean the infant gets its own room easily, everyone else sleeps comfortably. Scicli is arguably the most beautiful and least touristy town in the Val di Noto. Great for culture-focused groups who don't want to compete with crowds."
+  },
+  {
+    id:11, rank:11,
+    name:"Trappeto Dellago",
+    sub:"Sea view · Pool · Parking · Avola",
+    loc:"Avola (near Noto)", area:"noto", beds:3, sleeps:5,
+    rating:4.97, reviews:37,
+    price:2248, orig:null, ppn:281,
+    platform:"airbnb",
+    dnote:null, over:false,
+    tags:["Sea view + pool","Parking included","Near UNESCO Noto","⭐4.97 / 37 reviews"],
+    hl:null,
+    img:"https://images.unsplash.com/photo-1439405526976-ea3ce870af0f?w=700&h=460&fit=crop&q=80",
+    link:"https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&checkout=2026-05-12&adults=6&infants=1&amenities%5B%5D=7&min_bedrooms=3",
+    why:"Sea in front, Noto 10 minutes away, ⭐4.97 with 37 solid reviews. Avola is the world capital of Avola almonds — you'll drink the best almond wine of your life and not even know what hit you. Pool + sea view + parking + WiFi. Everything you need, nothing missing. One of the most complete packages under €2,300 on the list."
+  },
+  {
+    id:12, rank:12,
+    name:"Villa Janco",
+    sub:"Countryside villa · Noto area",
+    loc:"Noto", area:"noto", beds:4, sleeps:6,
+    rating:5.0, reviews:4,
+    price:2393, orig:2613, ppn:299,
+    platform:"airbnb",
+    dnote:"⚠️ Available May 5–12 (starts one day late — need a plan for night 1)",
+    over:false,
+    tags:["Perfect ⭐5.0","Discounted","4 beds","Noto countryside"],
+    hl:"🏷️ Discounted",
+    img:"https://images.unsplash.com/photo-1628928783073-2a0ce4a1d22d?w=700&h=460&fit=crop&q=80",
+    link:"https://www.airbnb.com/s/Noto--Sicily--Italy/homes?checkin=2026-05-04&checkout=2026-05-12&adults=6&infants=1&amenities%5B%5D=7&min_bedrooms=3",
+    why:"Perfect ⭐5.0 score in the Noto countryside, discounted from €2,613 to €2,393. 4 bedrooms. The one catch: it's available May 5–12, meaning you'd need a hotel or different spot for May 4. For a group that can manage one flexible night, this is genuinely one of the best-quality stays in the Noto area at this price point."
+  },
+  {
+    id:13, rank:13,
+    name:"At Chica's House",
+    sub:"Perfect ⭐5.0 · 13 reviews · Ragusa",
+    loc:"Ragusa", area:"ragusa", beds:3, sleeps:6,
+    rating:5.0, reviews:13,
+    price:2658, orig:null, ppn:332,
+    platform:"airbnb",
+    dnote:null, over:false,
+    tags:["⭐5.0 / 13 reviews","Personal host","Pool","Ragusa province"],
+    hl:null,
+    img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&h=460&fit=crop&q=80",
+    link:"https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&checkout=2026-05-12&adults=6&infants=1&amenities%5B%5D=7&min_bedrooms=3",
+    why:"⭐5.0 with 13 reviews in Ragusa. Not a fluke — that's 13 consecutive five-star experiences. Small enough that the owner still cares about every guest personally. In Ragusa province, meaning Ragusa Ibla, Modica chocolate, and Scicli are all day-trip material. This is the authentic, personal experience that big property management companies can't replicate."
+  },
+  {
+    id:14, rank:14,
+    name:"Casa Sekeles",
+    sub:"Between Olive Trees and the Sea · Scicli",
+    loc:"Scicli", area:"scicli", beds:5, sleeps:6,
+    rating:null, reviews:null,
+    price:2644, orig:3040, ppn:331,
+    platform:"airbnb",
+    dnote:null, over:false,
+    tags:["5 beds","Free cancellation","Pay €0 today","Direct from owner"],
+    hl:"✓ Free Cancellation",
+    img:"https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=700&h=460&fit=crop&q=80",
+    link:"https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&checkout=2026-05-12&adults=6&infants=1&amenities%5B%5D=7&min_bedrooms=3",
+    why:"5 bedrooms between olive trees and the sea in Scicli — you pay nothing today and can cancel freely. Discounted from €3,040 to €2,644 with a weekly deal. Listed as an individual host, meaning you're communicating directly with the owner, not a faceless management company. More personal, more flexible, and in our experience, more honest about any quirks the place might have."
+  },
+  {
+    id:15, rank:15,
+    name:"Acquaterra Oasis",
+    sub:"Highest rated on list · Pool + Sea View",
+    loc:"Sampieri", area:"ragusa", beds:3, sleeps:5,
+    rating:4.98, reviews:46,
+    price:2705, orig:2945, ppn:338,
+    platform:"airbnb",
+    dnote:null, over:false,
+    tags:["⭐4.98 HIGHEST RATED","Pool + sea view","Sampieri village","46 reviews"],
+    hl:"🌟 Top Rated",
+    img:"https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=700&h=460&fit=crop&q=80",
+    link:"https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&checkout=2026-05-12&adults=6&infants=1&amenities%5B%5D=7&min_bedrooms=3",
+    why:"The highest guest-rated villa on the entire list: ⭐4.98 with 46 reviews. Not a small sample. Not a fluke. Pool AND sea view in Sampieri — a tiny fishing village that's still largely off the tourist map, with some of the best seafood restaurants you'll ever stumble into. Weekly discount drops it from €2,945 to €2,705. If the group wants maximum quality and doesn't mind paying a little more, this is the answer."
+  },
+  {
+    id:16, rank:16,
+    name:"Villa Livia",
+    sub:"Superhost · Fontane Bianche · Syracuse coast",
+    loc:"Fontane Bianche", area:"siracusa", beds:4, sleeps:6,
+    rating:4.74, reviews:31,
+    price:2760, orig:null, ppn:345,
+    platform:"airbnb",
+    dnote:null, over:false,
+    tags:["Fontane Bianche beach","4 beds / 6 beds total","Superhost","Syracuse area"],
+    hl:null,
+    img:"https://images.unsplash.com/photo-1540541338537-e59be15d5f50?w=700&h=460&fit=crop&q=80",
+    link:"https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&checkout=2026-05-12&adults=6&infants=1&amenities%5B%5D=7&min_bedrooms=3",
+    why:"Fontane Bianche is one of Sicily's most underrated beaches — crystal clear water, white sand, genuinely beautiful and calm in May. Superhost with 31 reviews. 4 bedrooms and 6 beds. Connects you to the Syracuse side of the island: the Greek Theatre, Ortygia island, the Ear of Dionysius. A different cultural experience from the Ragusa circuit, without paying city prices."
+  },
+  {
+    id:17, rank:17,
+    name:"Villa Nerissa",
+    sub:"Superhost · Pozzallo · 4 double beds",
+    loc:"Pozzallo", area:"ragusa", beds:4, sleeps:6,
+    rating:5.0, reviews:3,
+    price:2824, orig:null, ppn:353,
+    platform:"airbnb",
+    dnote:null, over:false,
+    tags:["⭐5.0 Superhost","4 double beds","Pozzallo sea town","Sea view"],
+    hl:null,
+    img:"https://images.unsplash.com/photo-1531259169118-dae4e02c8a07?w=700&h=460&fit=crop&q=80",
+    link:"https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&checkout=2026-05-12&adults=6&infants=1&amenities%5B%5D=7&min_bedrooms=3",
+    why:"4 double beds means every adult has their own room and their own double bed — no one shares, no awkward arrangements, no compromises. Pozzallo is the southernmost town in Sicily, with a very local feel and zero tourists. Superhost, perfect ⭐5.0, sea view. Only 3 reviews means it's relatively new and still available for dates others have missed."
+  },
+  {
+    id:18, rank:18,
+    name:"Villa with Splendid Pool",
+    sub:"Near Selinunte · VRBO 10/10 · 4 beds",
+    loc:"Near Selinunte", area:"other", beds:4, sleeps:8,
+    rating:10, reviews:12,
+    price:2969, orig:3379, ppn:371,
+    platform:"vrbo",
+    dnote:null, over:false,
+    tags:["10/10 VRBO rating","Greek ruins nearby","4 beds / sleeps 8","All fees included"],
+    hl:"🏷️ Discounted",
+    img:"https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=700&h=460&fit=crop&q=80",
+    link:"https://www.vrbo.com/search?minBedrooms=3&destination=Sicily+South+Coast%2C+Sicily%2C+Italy&startDate=2026-05-04&endDate=2026-05-12&adults=6&children=1_0&amenities_facilities_group=pool",
+    why:"10/10 on VRBO with 12 verified reviews — near-perfect, provably. Located near the ancient Greek ruins of Selinunte, one of the most dramatic and least crowded archaeological sites in the Mediterranean. 4 bedrooms, sleeps 8, all fees included. Discounted from $3,379 to $2,969. Slightly further west than Ragusa but the area is genuinely spectacular."
+  },
+  {
+    id:19, rank:19,
+    name:"Villa Dama",
+    sub:"Luxury Escape · Avola · ⭐4.9",
+    loc:"Avola", area:"noto", beds:4, sleeps:6,
+    rating:4.9, reviews:20,
+    price:3002, orig:null, ppn:375,
+    platform:"airbnb",
+    dnote:"⚠️ Slightly over budget (€2 over). Split €0.29 per person.",
+    over:true,
+    tags:["Airbnb Luxury label","4 beds","Avola","20 reviews"],
+    hl:null,
+    img:"https://images.unsplash.com/photo-1455587734955-081b22074882?w=700&h=460&fit=crop&q=80",
+    link:"https://www.airbnb.com/s/Ragusa--Sicily--Italy/homes?checkin=2026-05-04&checkout=2026-05-12&adults=6&infants=1&amenities%5B%5D=7&min_bedrooms=3",
+    why:"Exactly €2 over the €3,000 budget — that's €0.29 per person. ⭐4.9 with 20 reviews, Airbnb Luxury Escape designation, 4 bedrooms in Avola, and finishes that most properties at this price can't match. If the group agrees to split two euros, you're in a luxury-tagged property. We included it because the line between budget and luxury shouldn't be two euros."
+  },
+  {
+    id:20, rank:20,
+    name:"Freshly Renovated Villa",
+    sub:"Large pool · Sea view · Noto area",
+    loc:"Noto area", area:"noto", beds:4, sleeps:6,
+    rating:4.9, reviews:31,
+    price:3108, orig:null, ppn:389,
+    platform:"airbnb",
+    dnote:"⚠️ €108 over budget — €18 per person if split 6 ways.",
+    over:true,
+    tags:["Brand new renovation","Sea view","Large pool","31 reviews already"],
+    hl:null,
+    img:"https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=700&h=460&fit=crop&q=80",
+    link:"https://www.airbnb.com/s/Noto--Sicily--Italy/homes?checkin=2026-05-04&checkout=2026-05-12&adults=6&infants=1&amenities%5B%5D=7&min_bedrooms=3",
+    why:"Just renovated, yet already scoring ⭐4.9 with 31 reviews — the quality translated immediately. Large private pool, sea view, 4 bedrooms in the Noto area. €108 over budget total, which is €18 per person if split evenly. You get brand-new interiors without the risk of an untested property. The freshness factor matters when you're spending a week in a place."
+  }
+];
+
+let filterArea = 'all';
+let filterBeds = 'all';
+let sortBy = 'price';
+let votes = {};
+
+function render(){
+  let list = VILLAS.filter(v => {
+    const a = filterArea === 'all' || v.area === filterArea;
+    const b = filterBeds === 'all'
+      || (filterBeds === '3' && v.beds === 3)
+      || (filterBeds === '4' && v.beds === 4)
+      || (filterBeds === '5' && v.beds >= 5);
+    return a && b;
+  });
+
+  if(sortBy === 'price') list.sort((a,b) => a.price - b.price);
+  else if(sortBy === 'rating') list.sort((a,b) => (b.rating||0)-(a.rating||0));
+  else if(sortBy === 'votes') list.sort((a,b) => (votes[b.id]?1:0)-(votes[a.id]?1:0));
+
+  document.getElementById('rnum').textContent = list.length;
+
+  document.getElementById('grid').innerHTML = list.map(v => {
+    const voted = !!votes[v.id];
+    const rat = v.platform === 'vrbo'
+      ? (v.rating ? `<span class="stars">${'★'.repeat(5)}</span> ${v.rating}/10 (${v.reviews})` : '—')
+      : (v.rating ? `<span class="stars">${'★'.repeat(Math.round(v.rating))}</span> ${v.rating} (${v.reviews})` : '<span style="color:var(--muted)">New listing</span>');
+
+    const priceRow = `
+      ${v.orig ? `<span class="price-orig">€${v.orig.toLocaleString()}</span>` : ''}
+      <span class="price-total">€${v.price.toLocaleString()}</span>
+      ${v.over ? `<span class="over-tag">slightly over €3k</span>` : ''}
+      <span class="price-nt">≈ €${v.ppn}/night</span>
+    `;
+
+    const tagsHtml = v.tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+    return `
+    <div class="card" data-id="${v.id}" data-area="${v.area}" data-beds="${v.beds}">
+      <div class="cimg">
+        <img src="${v.img}" alt="${v.name}" loading="lazy">
+        <div class="cimg-ov"></div>
+        <div class="rank">#${v.rank}</div>
+        <div class="pbadge ${v.platform}">${v.platform === 'agency' ? 'Agency' : v.platform.toUpperCase()}</div>
+        ${v.hl ? `<div class="sbadge">${v.hl}</div>` : ''}
+        <button class="vbtn ${voted?'on':''}" onclick="vote(${v.id},'${v.name.replace(/'/g,"\\'")}')">
+          ${voted ? '❤️ Voted' : '🤍 Love it'}
+        </button>
+      </div>
+      <div class="cbody">
+        <div class="cloc">📍 ${v.loc}</div>
+        <div class="cname">${v.name}</div>
+        <div class="csub">${v.sub}</div>
+        <div class="cmeta">
+          <span class="cmeta-i">🛏️ ${v.beds} bed${v.beds>1?'s':''}</span>
+          <span class="cmeta-i">👥 Sleeps ${v.sleeps}</span>
+          <span class="cmeta-i">${rat}</span>
+        </div>
+        ${v.dnote ? `<div class="dnote">${v.dnote}</div>` : ''}
+        <div class="cprice">${priceRow}</div>
+        <div class="tags">${tagsHtml}</div>
+        <div class="why-wrap">
+          <button class="why-btn" onclick="toggleWhy(${v.id},this)">💬 Why we included this ▾</button>
+          <div class="why-txt" id="why${v.id}">${v.why}</div>
+        </div>
+      </div>
+      <div class="cfoot">
+        <a href="${v.link}" target="_blank" class="book-btn">View & Book →</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleWhy(id, btn){
+  const el = document.getElementById('why'+id);
+  el.classList.toggle('open');
+  btn.innerHTML = el.classList.contains('open')
+    ? '💬 Why we included this ▴'
+    : '💬 Why we included this ▾';
+}
+
+function vote(id, name){
+  if(votes[id]) delete votes[id];
+  else votes[id] = name;
+  render();
+  updateFavBar();
+}
+
+function clearVotes(){
+  votes = {};
+  render();
+  updateFavBar();
+}
+
+function updateFavBar(){
+  const bar = document.getElementById('favbar');
+  const items = document.getElementById('fav-items');
+  const faves = Object.values(votes);
+  if(faves.length){
+    bar.classList.add('show');
+    items.innerHTML = faves.map(n => `<span class="fav-chip">❤️ ${n}</span>`).join('');
+  } else {
+    bar.classList.remove('show');
+  }
+}
+
+function setFilter(btn, type, val){
+  const row = btn.closest('.ctrl-row');
+  row.querySelectorAll('.fbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  if(type === 'area') filterArea = val;
+  else filterBeds = val;
+  render();
+}
+
+function setSort(btn, val){
+  document.querySelectorAll('.sbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  sortBy = val;
+  render();
+}
+
+render();
+</script>
+
+
+</body></html>
