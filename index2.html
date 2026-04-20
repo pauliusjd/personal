@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPKI Validator — rpki.judickas.net</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0ede8;
+    --border: rgba(0,0,0,0.08);
+    --border2: rgba(0,0,0,0.15);
+    --accent: #0057ff;
+    --accent-dim: rgba(0,87,255,0.07);
+    --accent-glow: rgba(0,87,255,0.15);
+    --text: #111318;
+    --text-2: #5a606e;
+    --text-3: #9aa0ae;
+    --valid: #0a7c42;
+    --valid-bg: rgba(10,124,66,0.07);
+    --invalid: #c8112a;
+    --invalid-bg: rgba(200,17,42,0.07);
+    --warn: #b35f00;
+    --warn-bg: rgba(179,95,0,0.07);
+    --notfound: #7a848e;
+    --notfound-bg: rgba(122,132,142,0.07);
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% -5%, rgba(0,87,255,0.05) 0%, transparent 65%),
+      var(--bg);
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 80px,
+      rgba(0,0,0,0.012) 80px,
+      rgba(0,0,0,0.012) 81px
+    );
+    pointer-events: none; z-index: 9999;
+  }
+  .page { max-width: 900px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+
+  .site-header { margin-bottom: 2.5rem; }
+  .domain { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.75rem; opacity: 0.8; }
+  .site-header h1 { font-family: var(--mono); font-size: clamp(20px, 4vw, 30px); font-weight: 300; letter-spacing: -0.02em; }
+  .site-header h1 span { color: var(--accent); }
+  .tagline { font-size: 13px; color: var(--text-2); margin-top: 0.4rem; font-weight: 300; }
+  .arin-tag { display: inline-block; margin-top: 0.9rem; font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); background: var(--accent-dim); border: 1px solid rgba(0,87,255,0.2); border-radius: 2px; padding: 4px 12px; }
+  .joke { font-size: 12px; color: var(--text-3); margin-top: 0.5rem; font-family: var(--mono); font-style: italic; }
+
+  .mode-tabs { display: flex; gap: 0; border: 1px solid var(--border2); border-radius: 4px; overflow: hidden; margin-bottom: 1.5rem; }
+  .mode-tab { flex: 1; padding: 10px 8px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-3); background: transparent; border: none; border-right: 1px solid var(--border); cursor: pointer; transition: all 0.15s; text-align: center; }
+  .mode-tab:last-child { border-right: none; }
+  .mode-tab:hover { color: var(--text-2); background: var(--surface2); }
+  .mode-tab.active { color: var(--accent); background: var(--accent-dim); font-weight: 500; }
+
+  .search-wrap { display: flex; border: 1px solid var(--border2); border-radius: 4px; overflow: hidden; background: var(--surface); transition: border-color 0.2s, box-shadow 0.2s; margin-bottom: 1rem; }
+  .search-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 20px var(--accent-glow); }
+  .search-wrap input { flex: 1; background: transparent; border: none; outline: none; font-family: var(--mono); font-size: 14px; color: var(--text); padding: 13px 16px; caret-color: var(--accent); min-width: 0; }
+  .search-wrap input::placeholder { color: var(--text-3); }
+  .search-wrap button { background: var(--accent-dim); border: none; border-left: 1px solid var(--border2); color: var(--accent); font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 22px; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
+  .search-wrap button:hover { background: rgba(0,87,255,0.14); }
+
+  .two-input { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+  .two-input input { font-family: var(--mono); font-size: 13px; background: var(--surface); border: 1px solid var(--border2); border-radius: 4px; color: var(--text); padding: 11px 14px; outline: none; transition: border-color 0.2s; }
+  .two-input input:focus { border-color: var(--accent); }
+  .three-input { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+  .three-input input, .three-input select { font-family: var(--mono); font-size: 13px; background: var(--surface); border: 1px solid var(--border2); border-radius: 4px; color: var(--text); padding: 11px 14px; outline: none; transition: border-color 0.2s; }
+  .three-input input:focus, .three-input select:focus { border-color: var(--accent); }
+  .full-btn { width: 100%; background: var(--accent-dim); border: 1px solid rgba(0,87,255,0.2); border-radius: 4px; color: var(--accent); font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 12px; cursor: pointer; transition: background 0.15s; margin-bottom: 1rem; }
+  .full-btn:hover { background: rgba(0,229,255,0.18); }
+
+  @media(max-width:560px) { .two-input, .three-input { grid-template-columns: 1fr; } }
+
+  .examples { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 2rem; align-items: center; }
+  .ex-label { font-size: 11px; color: var(--text-3); font-family: var(--mono); letter-spacing: 0.06em; }
+  .ex-pill { font-family: var(--mono); font-size: 11px; padding: 3px 10px; border: 1px solid var(--border); border-radius: 2px; color: var(--text-2); background: transparent; cursor: pointer; transition: all 0.15s; }
+  .ex-pill:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+  #results { min-height: 60px; }
+  .loading { display: flex; align-items: center; gap: 12px; padding: 2rem 0; font-family: var(--mono); font-size: 13px; color: var(--text-2); }
+  .spinner { width: 16px; height: 16px; border: 2px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .error-msg { font-family: var(--mono); font-size: 13px; color: var(--invalid); padding: 1.5rem 0; border-top: 1px solid var(--invalid-bg); }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--border); border-radius: 4px; margin-bottom: 1rem; overflow: hidden; animation: fadeIn 0.3s ease; }
+  .card.valid { border-left-color: var(--valid); }
+  .card.invalid { border-left-color: var(--invalid); }
+  .card.notfound { border-left-color: var(--notfound); }
+  .card.unknown, .card.warn { border-left-color: var(--warn); }
+  .card.suggest { border-left-color: var(--accent); }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .card-header { display: flex; align-items: center; gap: 14px; padding: 1.1rem 1.4rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .card-title { font-family: var(--mono); font-size: 17px; font-weight: 400; color: var(--text); }
+  .card-sub { font-size: 12px; color: var(--text-2); margin-top: 2px; font-weight: 300; }
+  .card-body { padding: 1.1rem 1.4rem; }
+
+  .badge { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; white-space: nowrap; flex-shrink: 0; }
+  .badge-valid { background: var(--valid-bg); color: var(--valid); border: 1px solid rgba(10,124,66,0.2); }
+  .badge-invalid { background: var(--invalid-bg); color: var(--invalid); border: 1px solid rgba(200,17,42,0.2); }
+  .badge-notfound { background: var(--notfound-bg); color: var(--notfound); border: 1px solid rgba(84,110,122,0.2); }
+  .badge-unknown, .badge-warn, .badge-partial { background: var(--warn-bg); color: var(--warn); border: 1px solid rgba(179,95,0,0.2); }
+  .badge-suggest { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(0,87,255,0.2); }
+
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom: 1.1rem; }
+  .meta-cell { background: var(--surface2); border: 1px solid var(--border); border-radius: 3px; padding: 9px 11px; }
+  .meta-label { font-family: var(--mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+  .meta-value { font-family: var(--mono); font-size: 14px; color: var(--text); }
+  .meta-value.ok { color: var(--valid); }
+  .meta-value.bad { color: var(--invalid); }
+  .meta-value.warn { color: var(--warn); }
+  .meta-value.accent { color: var(--accent); }
+
+  .section-label { font-family: var(--mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; margin-top: 1.1rem; }
+
+  .data-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; }
+  .data-table th { text-align: left; font-size: 10px; color: var(--text-3); letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 10px; border-bottom: 1px solid var(--border); font-weight: 400; }
+  .data-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text-2); vertical-align: middle; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
+  .data-table td.ok { color: var(--valid); }
+  .data-table td.bad { color: var(--invalid); }
+  .data-table td.warn { color: var(--warn); }
+  .data-table td.dim { color: var(--text-3); }
+  .data-table td.accent { color: var(--accent); }
+  .data-table td.click { cursor: pointer; }
+  .data-table td.click:hover { color: var(--accent); }
+
+  .chip-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { font-family: var(--mono); font-size: 11px; padding: 3px 8px; border: 1px solid var(--border); border-radius: 2px; color: var(--text-2); background: var(--surface2); cursor: pointer; transition: all 0.15s; }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+
+  .roa-box { background: var(--surface2); border: 1px solid rgba(0,87,255,0.15); border-radius: 3px; padding: 1rem 1.2rem; margin-bottom: 0.75rem; }
+  .roa-box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 8px; }
+  .roa-box-title { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 500; }
+  .portal-link { font-family: var(--mono); font-size: 11px; color: var(--text-3); padding: 3px 8px; border: 1px solid var(--border); border-radius: 2px; cursor: pointer; text-decoration: none; transition: all 0.15s; display: inline-block; }
+  .portal-link:hover { border-color: var(--accent); color: var(--accent); }
+  .roa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
+  .roa-field-label { font-size: 10px; color: var(--text-3); font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 3px; }
+  .roa-field-value { font-family: var(--mono); font-size: 13px; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 2px; padding: 6px 10px; }
+
+  .health-bar-wrap { margin-bottom: 1rem; }
+  .health-bar-track { height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+  .health-bar-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
+
+  .info-box { background: var(--accent-dim); border: 1px solid rgba(0,87,255,0.15); border-radius: 3px; padding: 10px 14px; font-family: var(--mono); font-size: 12px; color: var(--accent); margin-bottom: 0.75rem; }
+  .warn-box { background: var(--warn-bg); border: 1px solid rgba(255,171,64,0.2); border-radius: 3px; padding: 10px 14px; font-family: var(--mono); font-size: 12px; color: var(--warn); margin-bottom: 0.75rem; }
+  .ok-box { background: var(--valid-bg); border: 1px solid rgba(0,230,118,0.15); border-radius: 3px; padding: 10px 14px; font-family: var(--mono); font-size: 12px; color: var(--valid); margin-bottom: 0.75rem; }
+
+  .source-note { font-size: 11px; color: var(--text-3); font-family: var(--mono); margin-top: 1.1rem; padding-top: 0.9rem; border-top: 1px solid var(--border); }
+  .source-note a { color: var(--text-3); text-decoration: none; }
+  .source-note a:hover { color: var(--accent); }
+  .resolved-note { font-family: var(--mono); font-size: 11px; color: var(--text-3); margin-bottom: 8px; }
+  .resolved-note span { color: var(--accent); }
+  .copy-btn { font-family: var(--mono); font-size: 10px; color: var(--text-3); background: transparent; border: 1px solid var(--border); border-radius: 2px; padding: 2px 8px; cursor: pointer; transition: all 0.15s; }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+  pre { background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 10px 12px; font-family: var(--mono); font-size: 11px; color: var(--text-2); overflow-x: auto; white-space: pre; margin-bottom: 0.75rem; }
+
+  .site-footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 11px; color: var(--text-3); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .site-footer a { color: var(--text-3); text-decoration: none; }
+  .site-footer a:hover { color: var(--accent); }
+  @media(max-width:600px) { .card-header { flex-direction: column; align-items: flex-start; gap: 8px; } .search-wrap button { padding: 0 14px; } .mode-tab { font-size: 9px; padding: 10px 4px; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="site-header">
+    <div class="domain">rpki.judickas.net</div>
+    <h1>RPKI <span>Validator</span> &amp; Suggestor</h1>
+    <p class="tagline">Validate, diagnose and fix RPKI - IPv4, IPv6, ASNs - via RIPE Stat</p>
+    <div class="arin-tag">Live from ARIN 57</div>
+    <p class="joke">Built in 15 minutes with Claude. Yes, including the ROA suggestor. No, I don't want to talk about it.</p>
+  </header>
+
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="setMode('validate')">Validate</button>
+    <button class="mode-tab" onclick="setMode('ascheck')">AS Health</button>
+    <button class="mode-tab" onclick="setMode('suggest')">ROA Suggestor</button>
+    <button class="mode-tab" onclick="setMode('builder')">ROA Builder</button>
+  </div>
+
+  <!-- VALIDATE -->
+  <div id="mode-validate">
+    <div class="search-wrap">
+      <input type="text" id="query" placeholder="1.1.1.0/24  ·  2001:4860::/32  ·  8.8.8.8  ·  AS13335" autocomplete="off" spellcheck="false" />
+      <button onclick="runLookup()">Validate</button>
+    </div>
+    <div class="examples">
+      <span class="ex-label">try</span>
+      <button class="ex-pill" onclick="setQ('1.1.1.0/24')">1.1.1.0/24</button>
+      <button class="ex-pill" onclick="setQ('8.8.8.8')">8.8.8.8</button>
+      <button class="ex-pill" onclick="setQ('2001:4860::/32')">2001:4860::/32</button>
+      <button class="ex-pill" onclick="setQ('AS3356')">AS3356</button>
+      <button class="ex-pill" onclick="setQ('AS13335')">AS13335</button>
+      <button class="ex-pill" onclick="setQ('AS20764')">AS20764</button>
+    </div>
+  </div>
+
+  <!-- AS HEALTH -->
+  <div id="mode-ascheck" style="display:none">
+    <div class="search-wrap">
+      <input type="text" id="ascheck-query" placeholder="AS number - e.g. AS3356 or 3356" autocomplete="off" spellcheck="false" />
+      <button onclick="runASCheck()">Check health</button>
+    </div>
+    <div class="examples">
+      <span class="ex-label">try</span>
+      <button class="ex-pill" onclick="setASCheck('AS3356')">AS3356 Lumen</button>
+      <button class="ex-pill" onclick="setASCheck('AS13335')">AS13335 Cloudflare</button>
+      <button class="ex-pill" onclick="setASCheck('AS20764')">AS20764 RASCOM</button>
+      <button class="ex-pill" onclick="setASCheck('AS2856')">AS2856 BT</button>
+    </div>
+  </div>
+
+  <!-- ROA SUGGESTOR -->
+  <div id="mode-suggest" style="display:none">
+    <div class="info-box">Enter your prefix and origin ASN - we check if a ROA exists and generate the exact config to create one if not.</div>
+    <div class="two-input">
+      <input type="text" id="sug-prefix" placeholder="Prefix - e.g. 192.0.2.0/24" autocomplete="off" spellcheck="false" />
+      <input type="text" id="sug-asn" placeholder="Origin ASN - e.g. AS64496" autocomplete="off" spellcheck="false" />
+    </div>
+    <button class="full-btn" onclick="runSuggestor()">Check &amp; suggest ROA</button>
+    <div class="examples">
+      <span class="ex-label">try</span>
+      <button class="ex-pill" onclick="setSug('1.1.1.0/24','AS13335')">1.1.1.0/24 / AS13335</button>
+      <button class="ex-pill" onclick="setSug('8.8.8.0/24','AS15169')">8.8.8.0/24 / AS15169</button>
+      <button class="ex-pill" onclick="setSug('185.220.101.0/24','AS204094')">185.220.101.0/24 / AS204094</button>
+    </div>
+  </div>
+
+  <!-- ROA BUILDER -->
+  <div id="mode-builder" style="display:none">
+    <div class="info-box">Build a ROA - we warn you about max-length risks and generate router config snippets.</div>
+    <div class="three-input">
+      <input type="text" id="b-prefix" placeholder="Prefix - e.g. 192.0.2.0/24" autocomplete="off" spellcheck="false" />
+      <input type="text" id="b-asn" placeholder="Origin ASN - e.g. 64496" autocomplete="off" spellcheck="false" />
+      <select id="b-maxlen">
+        <option value="auto">Max-length: same as prefix</option>
+        <option value="24">/24 (IPv4 host max)</option>
+        <option value="25">/25</option>
+        <option value="26">/26</option>
+        <option value="28">/28</option>
+        <option value="48">/48 (IPv6 max)</option>
+      </select>
+    </div>
+    <button class="full-btn" onclick="runBuilder()">Generate ROA config</button>
+  </div>
+
+  <div id="results"></div>
+
+  <footer class="site-footer">
+    <span>rpki.judickas.net</span>
+    <span>Data: <a href="https://stat.ripe.net" target="_blank">RIPE Stat</a> &middot; <a href="https://www.caida.org" target="_blank">CAIDA</a></span>
+  </footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function setMode(mode) {
+  ['validate','ascheck','suggest','builder'].forEach(m => {
+    $('mode-' + m).style.display = m === mode ? 'block' : 'none';
+  });
+  document.querySelectorAll('.mode-tab').forEach((t,i) => {
+    t.classList.toggle('active', ['validate','ascheck','suggest','builder'][i] === mode);
+  });
+  $('results').innerHTML = '';
+}
+
+function setQ(v) { $('query').value = v; runLookup(); }
+function setASCheck(v) { $('ascheck-query').value = v; runASCheck(); }
+function setSug(p,a) { setMode('suggest'); $('sug-prefix').value=p; $('sug-asn').value=a; runSuggestor(); }
+
+$('query').addEventListener('keydown', e => { if(e.key==='Enter') runLookup(); });
+$('ascheck-query').addEventListener('keydown', e => { if(e.key==='Enter') runASCheck(); });
+$('sug-prefix').addEventListener('keydown', e => { if(e.key==='Enter') runSuggestor(); });
+$('sug-asn').addEventListener('keydown', e => { if(e.key==='Enter') runSuggestor(); });
+$('b-prefix').addEventListener('keydown', e => { if(e.key==='Enter') runBuilder(); });
+$('b-asn').addEventListener('keydown', e => { if(e.key==='Enter') runBuilder(); });
+
+const isASN = q => /^as\d+$/i.test(q.trim());
+const isSubnet = q => q.includes('/');
+const isIPv4 = q => /^\d{1,3}(\.\d{1,3}){3}$/.test(q.trim());
+const isIPv6str = q => q.includes(':');
+const getASN = q => q.trim().replace(/^as/i,'').match(/\d+/)?.[0] || '';
+const ipToSubnet = ip => { const p=ip.split('.'); return `${p[0]}.${p[1]}.${p[2]}.0/24`; };
+const getPrefixLen = p => { const m=p.match(/\/(\d+)/); return m?parseInt(m[1]):null; };
+
+function show(html) { $('results').innerHTML = html; }
+function loading(msg) { show(`<div class="loading"><div class="spinner"></div><span>${msg||'Querying...'}</span></div>`); }
+
+async function api(url) {
+  const r = await fetch(url);
+  if(!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+
+async function apiSoft(url) {
+  try {
+    const r = await fetch(url);
+    if(!r.ok) return null;
+    return r.json();
+  } catch { return null; }
+}
+
+// RPKI validation requires prefix + origin ASN paired together.
+// We first get origin ASNs from prefix-overview, then validate each pair.
+async function rpkiForPrefix(prefix) {
+  const overview = await apiSoft(`https://stat.ripe.net/data/prefix-overview/data.json?resource=${encodeURIComponent(prefix)}`);
+  const origins = overview?.data?.asns || [];
+
+  if (origins.length === 0) {
+    // No routing data - prefix not visible in BGP, treat as not found
+    return { status: 'not_found', roas: [], origins: [], holder: overview?.data?.holder || '' };
+  }
+
+  // Try each origin ASN until we get a useful result
+  let bestResult = null;
+  for (const o of origins.slice(0, 3)) {
+    const url = `https://stat.ripe.net/data/rpki-validation/data.json?resource=AS${o.asn}&prefix=${prefix.replace(/\//g, '%2F')}`;
+    const r = await apiSoft(url);
+    if (!r) continue;
+    const d = r.data || {};
+    const status = d.status || d.validated_route?.validity?.state || 'unknown';
+    const roas = d.validating_roas || d.validated_route?.validity?.VRPs || [];
+    if (!bestResult || status === 'valid' || (status !== 'unknown' && bestResult.status === 'unknown')) {
+      bestResult = { status, roas, origins, holder: overview?.data?.holder || '' };
+    }
+    if (status === 'valid' || status === 'invalid') break;
+  }
+
+  return bestResult || { status: 'not_found', roas: [], origins, holder: overview?.data?.holder || '' };
+}
+
+// Same for AS health check - pair each prefix with its announced origin
+async function rpkiForPrefixAndASN(prefix, asn) {
+  // RIPE Stat needs resource=AS{n}&prefix={prefix} - prefix slash must NOT be double-encoded
+  const cleanAsn = String(asn).replace(/^as/i, '');
+  const encodedPrefix = prefix.replace(/\//g, '%2F');
+  const url = `https://stat.ripe.net/data/rpki-validation/data.json?resource=AS${cleanAsn}&prefix=${encodedPrefix}`;
+  try {
+    const r = await fetch(url);
+    if (!r.ok) return { status: 'not_found', roas: [] };
+    const json = await r.json();
+    const d = json.data || {};
+    const status = d.status || 'not_found';
+    const roas = d.validating_roas || [];
+    return { status, roas };
+  } catch(e) {
+    return { status: 'not_found', roas: [] };
+  }
+}
+
+function sc(s) {
+  if(!s) return 'unknown';
+  const u = s.toLowerCase();
+  if(u==='valid') return 'valid';
+  if(u==='invalid') return 'invalid';
+  if(u.includes('not_found')||u==='notfound'||u==='not found') return 'notfound';
+  return 'unknown';
+}
+
+function badge(s, cls) {
+  const c = cls || sc(s);
+  const lbl = c==='notfound' ? 'NOT FOUND' : (s||'UNKNOWN').toUpperCase().replace(/_/g,' ');
+  return `<span class="badge badge-${c}">${lbl}</span>`;
+}
+
+const PORTALS = [
+  { name:'RIPE NCC', url:'https://my.ripe.net/#/authorisation/rpki' },
+  { name:'ARIN', url:'https://account.arin.net/resources' },
+  { name:'APNIC', url:'https://myapnic.net/' },
+  { name:'LACNIC', url:'https://milacnic.lacnic.net/' },
+  { name:'AFRINIC', url:'https://afrinic.net/resource-management' },
+];
+const portalLinks = () => PORTALS.map(p=>`<a class="portal-link" href="${p.url}" target="_blank">${p.name}</a>`).join(' ');
+
+// ── VALIDATE ─────────────────────────────────────────────────────────────────
+async function runLookup() {
+  const raw = $('query').value.trim();
+  if(!raw) return;
+  try {
+    if(isASN(raw)) {
+      loading('Fetching AS data and sampling RPKI...');
+      show(await renderASN(getASN(raw)));
+    } else if(isSubnet(raw)) {
+      loading('Querying RPKI validation...');
+      show(await renderPrefix(raw));
+    } else if(isIPv4(raw)) {
+      const sub = ipToSubnet(raw);
+      loading(`Resolving to ${sub}...`);
+      show(`<div class="resolved-note">Resolved <span>${raw}</span> to <span>${sub}</span></div>` + await renderPrefix(sub));
+    } else {
+      show('<div class="error-msg">Enter an IP, subnet (1.2.3.0/24), IPv6 prefix, or ASN (AS1234).</div>');
+    }
+  } catch(e) { show(`<div class="error-msg">Query failed: ${e.message}</div>`); }
+}
+
+async function renderPrefix(prefix) {
+  const [rpkiData, abuse] = await Promise.all([
+    rpkiForPrefix(prefix),
+    apiSoft(`https://stat.ripe.net/data/abuse-contact-finder/data.json?resource=${encodeURIComponent(prefix)}`)
+  ]);
+  const { status, roas, origins, holder } = rpkiData;
+  const abuseMail = abuse?.data?.anti_abuse_contacts?.abuse_c?.[0]?.email||abuse?.data?.abuse_contacts?.[0]||'';
+  const c = sc(status);
+
+  const roaRows = roas.length
+    ? roas.map(r=>{ const ro=r.roa||r; return `<tr><td class="ok">${ro.prefix||'-'}</td><td>${ro.origin?'AS'+ro.origin:'-'}</td><td>${ro.maxLength??ro['max-length']??'-'}</td><td class="dim">${ro.ta||'-'}</td></tr>`; }).join('')
+    : '<tr><td colspan="4" class="dim">No covering ROAs found</td></tr>';
+
+  const originChips = origins.map(a=>`<span class="chip" onclick="setQ('AS${a.asn}')">AS${a.asn}</span>`).join('');
+  const noROA = roas.length===0 && origins.length>0;
+  const suggestHint = noROA
+    ? `<div class="info-box" style="margin-top:1rem">No ROA found. <button class="copy-btn" onclick="setSug('${prefix}','AS${origins[0]?.asn||''}')">Generate ROA suggestion &rarr;</button></div>`
+    : '';
+
+  return `<div class="card ${c}">
+    <div class="card-header">${badge(status)}<div><div class="card-title">${prefix}</div>${holder?`<div class="card-sub">${holder}</div>`:''}</div></div>
+    <div class="card-body">
+      <div class="meta-grid">
+        <div class="meta-cell"><div class="meta-label">Prefix</div><div class="meta-value accent">${prefix}</div></div>
+        <div class="meta-cell"><div class="meta-label">Status</div><div class="meta-value ${c==='valid'?'ok':c==='invalid'?'bad':''}">${status.toUpperCase().replace('_',' ')}</div></div>
+        <div class="meta-cell"><div class="meta-label">Covering ROAs</div><div class="meta-value">${roas.length}</div></div>
+        <div class="meta-cell"><div class="meta-label">Origin ASNs</div><div class="meta-value">${origins.length||'-'}</div></div>
+        ${abuseMail?`<div class="meta-cell"><div class="meta-label">Abuse contact</div><div class="meta-value" style="font-size:11px;word-break:break-all">${abuseMail}</div></div>`:''}
+      </div>
+      ${origins.length?`<div class="section-label">Announcing ASNs</div><div class="chip-row">${originChips}</div>`:''}
+      <div class="section-label">Validating ROAs</div>
+      <table class="data-table"><thead><tr><th>Prefix</th><th>Origin AS</th><th>Max-length</th><th>Trust anchor</th></tr></thead><tbody>${roaRows}</tbody></table>
+      ${suggestHint}
+      <div class="source-note"><a href="https://stat.ripe.net/data/rpki-validation/data.json?resource=${encodeURIComponent(prefix)}" target="_blank">RPKI API</a> &middot; <a href="https://stat.ripe.net/data/prefix-overview/data.json?resource=${encodeURIComponent(prefix)}" target="_blank">Prefix overview</a></div>
+    </div>
+  </div>`;
+}
+
+async function renderASN(asn) {
+  const [overview, neighbours, prefixData] = await Promise.all([
+    api(`https://stat.ripe.net/data/as-overview/data.json?resource=AS${asn}`),
+    api(`https://stat.ripe.net/data/asn-neighbours/data.json?resource=AS${asn}`).catch(()=>null),
+    api(`https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS${asn}`).catch(()=>null)
+  ]);
+  const holder = overview?.data?.holder||`AS${asn}`;
+  const prefixes = prefixData?.data?.prefixes||[];
+  const upstreams = (neighbours?.data?.neighbours||[]).filter(n=>n.type==='left').slice(0,8);
+  const downstreams = (neighbours?.data?.neighbours||[]).filter(n=>n.type==='right').slice(0,8);
+  const sample = prefixes.slice(0,10);
+
+  const rpkiR = await Promise.all(sample.map(p=>rpkiForPrefixAndASN(p.prefix, asn)));
+  const statuses = rpkiR.map(r=>(r?.status||'not_found').toUpperCase());
+  const valid = statuses.filter(s=>s==='VALID').length;
+  const invalid = statuses.filter(s=>s==='INVALID').length;
+  const notfound = statuses.filter(s=>s.includes('NOT_FOUND')||s==='UNKNOWN').length;
+  const pct = sample.length ? Math.round((valid/sample.length)*100) : 0;
+  const c = invalid>0?'invalid':valid>0?'valid':'notfound';
+  const lbl = invalid>0?'PARTIAL INVALID':valid===sample.length&&sample.length>0?'VALID':valid>0?'PARTIAL VALID':'NOT FOUND';
+  const barColor = pct>=80?'var(--valid)':pct>=50?'var(--warn)':'var(--invalid)';
+
+  const prefixRows = sample.map((p,i)=>{
+    const s=statuses[i]||'UNKNOWN';
+    const cls=s==='VALID'?'ok':s==='INVALID'?'bad':'warn';
+    return `<tr><td class="accent click" onclick="setQ('${p.prefix}')">${p.prefix}</td><td class="${cls}">${s.replace('_',' ')}</td><td class="dim">${p.timelines?.[0]?.starttime?.slice(0,10)||'-'}</td></tr>`;
+  }).join('');
+
+  const upChips = upstreams.map(n=>`<span class="chip" onclick="setQ('AS${n.asn}')">AS${n.asn}</span>`).join('');
+  const downChips = downstreams.map(n=>`<span class="chip" onclick="setQ('AS${n.asn}')">AS${n.asn}</span>`).join('');
+
+  return `<div class="card ${c}">
+    <div class="card-header"><span class="badge badge-${c}">${lbl}</span><div><div class="card-title">AS${asn}</div><div class="card-sub">${holder}</div></div></div>
+    <div class="card-body">
+      <div class="meta-grid">
+        <div class="meta-cell"><div class="meta-label">ASN</div><div class="meta-value accent">AS${asn}</div></div>
+        <div class="meta-cell"><div class="meta-label">Total prefixes</div><div class="meta-value">${prefixes.length}</div></div>
+        <div class="meta-cell"><div class="meta-label">Valid (sample)</div><div class="meta-value ok">${valid}/${sample.length}</div></div>
+        <div class="meta-cell"><div class="meta-label">Invalid</div><div class="meta-value ${invalid>0?'bad':''}">${invalid}</div></div>
+        <div class="meta-cell"><div class="meta-label">Not found</div><div class="meta-value">${notfound}</div></div>
+        <div class="meta-cell"><div class="meta-label">Coverage</div><div class="meta-value ${pct>=80?'ok':pct>=50?'warn':'bad'}">${pct}%</div></div>
+      </div>
+      <div class="health-bar-wrap">
+        <div class="meta-label">RPKI coverage (sample of ${sample.length})</div>
+        <div class="health-bar-track"><div class="health-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      </div>
+      ${upChips?`<div class="section-label">Upstream providers</div><div class="chip-row">${upChips}</div>`:''}
+      ${downChips?`<div class="section-label">Downstream customers</div><div class="chip-row">${downChips}</div>`:''}
+      ${sample.length?`<div class="section-label">Per-prefix RPKI - click prefix to inspect</div>
+      <table class="data-table"><thead><tr><th>Prefix</th><th>RPKI status</th><th>First seen</th></tr></thead><tbody>${prefixRows}</tbody></table>`:''}
+      <div class="source-note">Sampled first ${sample.length} of ${prefixes.length} announced prefixes. <a href="https://stat.ripe.net/data/as-overview/data.json?resource=AS${asn}" target="_blank">AS overview API</a></div>
+    </div>
+  </div>`;
+}
+
+// ── AS HEALTH CHECK ───────────────────────────────────────────────────────────
+async function runASCheck() {
+  const raw = $('ascheck-query').value.trim();
+  if(!raw) return;
+  const asn = getASN(raw.replace(/^as/i,'').match(/\d+/)?.[0]||raw);
+  if(!asn||isNaN(asn)) { show('<div class="error-msg">Enter a valid ASN.</div>'); return; }
+  loading(`Running RPKI health check for AS${asn}...`);
+  try {
+    const [overview, prefixData] = await Promise.all([
+      api(`https://stat.ripe.net/data/as-overview/data.json?resource=AS${asn}`),
+      api(`https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS${asn}`).catch(()=>null)
+    ]);
+    const holder = overview?.data?.holder||`AS${asn}`;
+    const prefixes = prefixData?.data?.prefixes||[];
+    const sample = prefixes.slice(0,20);
+    loading(`Checking ${sample.length} of ${prefixes.length} prefixes for AS${asn}...`);
+    const rpkiR = await Promise.all(sample.map(p=>rpkiForPrefixAndASN(p.prefix, asn)));
+
+    const rows = sample.map((p,i)=>{
+      const s=(rpkiR[i]?.status||'not_found').toUpperCase();
+      const roas=(rpkiR[i]?.roas||[]).length;
+      const cls=s==='VALID'?'ok':s==='INVALID'?'bad':'warn';
+      const action=s==='VALID'
+        ?'<span style="color:var(--valid);font-size:11px">ROA OK</span>'
+        :`<button class="copy-btn" onclick="setSug('${p.prefix}','AS${asn}')">Fix &rarr;</button>`;
+      return {prefix:p.prefix,s,cls,roas,action};
+    });
+
+    const valid=rows.filter(r=>r.s==='VALID').length;
+    const invalid=rows.filter(r=>r.s==='INVALID').length;
+    const notfound=rows.filter(r=>r.s.includes('NOT_FOUND')||r.s==='UNKNOWN').length;
+    const pct=sample.length?Math.round((valid/sample.length)*100):0;
+    const c=invalid>0?'invalid':valid===sample.length&&sample.length>0?'valid':'warn';
+    const barColor=pct>=80?'var(--valid)':pct>=50?'var(--warn)':'var(--invalid)';
+
+    const tableRows=rows.map(r=>`<tr>
+      <td class="accent click" onclick="setQ('${r.prefix}')">${r.prefix}</td>
+      <td class="${r.cls}">${r.s.replace('_',' ')}</td>
+      <td class="dim">${r.roas}</td>
+      <td>${r.action}</td>
+    </tr>`).join('');
+
+    const missing=rows.filter(r=>r.s!=='VALID').length;
+    const statusBox = missing===0
+      ? `<div class="ok-box">All ${sample.length} sampled prefixes have valid ROAs. RPKI health looks good.</div>`
+      : `<div class="warn-box">${missing} prefix${missing>1?'es':''} need${missing===1?'s':''} ROA attention. Click "Fix" on any row to open the ROA Suggestor.</div>`;
+
+    show(`<div class="card ${c}">
+      <div class="card-header"><span class="badge badge-${c}">${pct}% COVERED</span><div><div class="card-title">AS${asn} — RPKI Health</div><div class="card-sub">${holder}</div></div></div>
+      <div class="card-body">
+        <div class="meta-grid">
+          <div class="meta-cell"><div class="meta-label">Total prefixes</div><div class="meta-value">${prefixes.length}</div></div>
+          <div class="meta-cell"><div class="meta-label">Checked</div><div class="meta-value">${sample.length}</div></div>
+          <div class="meta-cell"><div class="meta-label">Valid ROAs</div><div class="meta-value ok">${valid}</div></div>
+          <div class="meta-cell"><div class="meta-label">Invalid</div><div class="meta-value ${invalid>0?'bad':''}">${invalid}</div></div>
+          <div class="meta-cell"><div class="meta-label">Not found</div><div class="meta-value ${notfound>0?'warn':''}">${notfound}</div></div>
+          <div class="meta-cell"><div class="meta-label">Coverage</div><div class="meta-value ${pct>=80?'ok':pct>=50?'warn':'bad'}">${pct}%</div></div>
+        </div>
+        <div class="health-bar-wrap">
+          <div class="meta-label">RPKI ROA coverage</div>
+          <div class="health-bar-track"><div class="health-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+        </div>
+        <div class="section-label">Prefix breakdown - click prefix to inspect, Fix to generate ROA</div>
+        <table class="data-table"><thead><tr><th>Prefix</th><th>RPKI status</th><th>ROAs</th><th>Action</th></tr></thead><tbody>${tableRows}</tbody></table>
+        ${statusBox}
+        <div class="source-note">Checked first ${sample.length} of ${prefixes.length} announced prefixes.</div>
+      </div>
+    </div>`);
+  } catch(e) { show(`<div class="error-msg">Query failed: ${e.message}</div>`); }
+}
+
+// ── ROA SUGGESTOR ─────────────────────────────────────────────────────────────
+async function runSuggestor() {
+  const prefix = $('sug-prefix').value.trim();
+  const asnRaw = $('sug-asn').value.trim();
+  if(!prefix||!asnRaw) { show('<div class="error-msg">Enter both prefix and ASN.</div>'); return; }
+  const asn = getASN(asnRaw)||asnRaw.replace(/\D/g,'');
+  loading(`Checking RPKI for ${prefix} / AS${asn}...`);
+  try {
+    const [rpkiData, prefixInfo] = await Promise.all([
+      rpkiForPrefixAndASN(prefix, asn),
+      apiSoft(`https://stat.ripe.net/data/prefix-overview/data.json?resource=${encodeURIComponent(prefix)}`)
+    ]);
+    const status = (rpkiData?.status||'not_found').toUpperCase();
+    const roas = rpkiData?.roas||[];
+    const holder = prefixInfo?.data?.holder||'';
+    const prefixLen = getPrefixLen(prefix);
+    const isV6 = isIPv6str(prefix);
+
+    let statusBox = '';
+    if(status==='VALID') {
+      const myROA = roas.find(r=>(r.roa?.origin||r.origin)?.toString()===asn);
+      statusBox = myROA
+        ? `<div class="ok-box">ROA already exists and is VALID for AS${asn} originating ${prefix}. Covering ROA: ${(myROA.roa||myROA).prefix} max-length /${(myROA.roa||myROA).maxLength??(myROA.roa||myROA)['max-length']} via ${(myROA.roa||myROA).ta}. No action needed.</div>`
+        : `<div class="warn-box">Prefix is VALID but the ROA does not match AS${asn}. Another origin AS holds the ROA. Verify you are the legitimate origin before creating a new ROA.</div>`;
+    } else if(status==='INVALID') {
+      statusBox = `<div class="warn-box">INVALID - a ROA exists but does not match the current announcement. Check existing ROAs before creating a new one - you may need to update max-length or origin AS on an existing ROA.</div>`;
+    } else {
+      statusBox = `<div class="info-box">No ROA found for this prefix. Create one using the configuration below.</div>`;
+    }
+
+    const maxLenWarning = prefixLen && prefixLen < (isV6?48:24)
+      ? `<div class="warn-box">Tip: set max-length = prefix length (/${prefixLen}) for tightest security. Only increase it if you specifically announce more-specific prefixes from AS${asn}.</div>`
+      : '';
+
+    const roaRows = roas.length
+      ? roas.map(r=>{ const ro=r.roa||r; return `<tr><td class="ok">${ro.prefix||'-'}</td><td>${ro.origin?'AS'+ro.origin:'-'}</td><td>/${ro.maxLength??ro['max-length']??'-'}</td><td class="dim">${ro.ta||'-'}</td></tr>`; }).join('')
+      : '';
+
+    show(`<div class="card suggest">
+      <div class="card-header"><span class="badge badge-suggest">ROA SUGGESTION</span><div><div class="card-title">${prefix} / AS${asn}</div>${holder?`<div class="card-sub">${holder}</div>`:''}</div></div>
+      <div class="card-body">
+        ${statusBox}
+        <div class="section-label">Recommended ROA configuration</div>
+        <div class="roa-box">
+          <div class="roa-box-header"><span class="roa-box-title">ROA for ${prefix}</span><div style="display:flex;gap:6px;flex-wrap:wrap">${portalLinks()}</div></div>
+          <div class="roa-grid">
+            <div><div class="roa-field-label">Prefix</div><div class="roa-field-value">${prefix}</div></div>
+            <div><div class="roa-field-label">Origin AS</div><div class="roa-field-value">AS${asn}</div></div>
+            <div><div class="roa-field-label">Max-length</div><div class="roa-field-value">/${prefixLen} (= prefix)</div></div>
+            <div><div class="roa-field-label">Address family</div><div class="roa-field-value">${isV6?'IPv6':'IPv4'}</div></div>
+          </div>
+        </div>
+        ${maxLenWarning}
+        ${roas.length?`<div class="section-label">Existing ROAs on this prefix</div><table class="data-table"><thead><tr><th>Prefix</th><th>Origin AS</th><th>Max-length</th><th>Trust anchor</th></tr></thead><tbody>${roaRows}</tbody></table>`:''}
+        <div class="section-note" style="font-size:11px;color:var(--text-3);font-family:var(--mono);margin-top:1rem">Use the ROA Builder tab to generate router config snippets after creating your ROA.</div>
+      </div>
+    </div>`);
+  } catch(e) { show(`<div class="error-msg">Query failed: ${e.message}</div>`); }
+}
+
+// ── ROA BUILDER ───────────────────────────────────────────────────────────────
+async function runBuilder() {
+  const prefix = $('b-prefix').value.trim();
+  const asnRaw = $('b-asn').value.trim();
+  const maxSel = $('b-maxlen').value;
+  if(!prefix||!asnRaw) { show('<div class="error-msg">Enter a prefix and ASN.</div>'); return; }
+  const asn = asnRaw.replace(/^as/i,'').replace(/\D/g,'');
+  const prefixLen = getPrefixLen(prefix);
+  const isV6 = isIPv6str(prefix);
+  if(prefixLen===null) { show('<div class="error-msg">Invalid prefix - include length, e.g. 192.0.2.0/24.</div>'); return; }
+  const maxLen = maxSel==='auto' ? prefixLen : parseInt(maxSel);
+  const tooPermissive = maxLen > prefixLen;
+  const wayToo = !isV6 && maxLen > prefixLen+2 || isV6 && maxLen > prefixLen+8;
+
+  const configs = [
+    { vendor:'BIRD 2.x', code:`roa4 table rpki_roas;\n\nprotocol rpki rpki_server {\n  roa4 { table rpki_roas; };\n  remote "your-rpki-cache" port 3323;\n  retry keep 90;\n  refresh keep 900;\n  expire keep 172800;\n}` },
+    { vendor:'FRRouting', code:`rpki\n  rpki cache your-rpki-cache 3323 preference 1\nexit\n!\nrouter bgp ${asn||'YOUR_ASN'}\n  bgp rpki server TCP your-rpki-cache port 3323` },
+    { vendor:'OpenBGPD', code:`rtr-config {\n  remote your-rpki-cache port 3323\n}` },
+  ];
+
+  const cfgHTML = configs.map(c=>`<div class="meta-label" style="margin-bottom:4px;margin-top:1rem">${c.vendor}</div><pre>${c.code}</pre>`).join('');
+
+  show(`<div class="card suggest">
+    <div class="card-header"><span class="badge badge-suggest">ROA BUILDER</span><div><div class="card-title">${prefix} / AS${asn}</div><div class="card-sub">max-length /${maxLen}</div></div></div>
+    <div class="card-body">
+      ${wayToo?`<div class="warn-box">max-length /${maxLen} is very permissive - allows announcements down to /${maxLen}. High hijack risk. Strongly consider /${prefixLen} unless you definitely need more-specifics.</div>`:''}
+      ${tooPermissive&&!wayToo?`<div class="warn-box">max-length /${maxLen} allows more-specific announcements from AS${asn}. Only use this if you actively announce more-specifics.</div>`:''}
+      ${!tooPermissive?`<div class="ok-box">max-length = prefix length /${prefixLen}. Tightest security - only the exact prefix validates as VALID from AS${asn}.</div>`:''}
+      <div class="section-label">ROA configuration</div>
+      <div class="roa-box">
+        <div class="roa-box-header"><span class="roa-box-title">Create in your RIR portal</span><div style="display:flex;gap:6px;flex-wrap:wrap">${portalLinks()}</div></div>
+        <div class="roa-grid">
+          <div><div class="roa-field-label">Prefix</div><div class="roa-field-value">${prefix}</div></div>
+          <div><div class="roa-field-label">Origin AS</div><div class="roa-field-value">AS${asn}</div></div>
+          <div><div class="roa-field-label">Max-length</div><div class="roa-field-value">/${maxLen}</div></div>
+          <div><div class="roa-field-label">Address family</div><div class="roa-field-value">${isV6?'IPv6':'IPv4'}</div></div>
+        </div>
+      </div>
+      <div class="section-label">What this ROA validates</div>
+      <table class="data-table">
+        <thead><tr><th>Announcement</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td class="accent">${prefix} from AS${asn}</td><td class="ok">VALID</td></tr>
+          ${maxLen>prefixLen?`<tr><td class="accent">[more-specific up to /${maxLen}] from AS${asn}</td><td class="ok">VALID</td></tr>`:''}
+          <tr><td class="dim">${prefix} from AS99999</td><td class="bad">INVALID - wrong origin AS</td></tr>
+          ${maxLen<(isV6?128:32)?`<tr><td class="dim">[more-specific beyond /${maxLen}] from AS${asn}</td><td class="bad">INVALID - too specific</td></tr>`:''}
+        </tbody>
+      </table>
+      <div class="section-label" style="margin-top:1.5rem">Router RPKI validation config</div>
+      ${cfgHTML}
+      <div class="source-note" style="margin-top:1rem">Replace "your-rpki-cache" with your validator address (Routinator, OctoRPKI, Fort, etc.). After creating the ROA in your RIR portal, use <button class="copy-btn" onclick="setSug('${prefix}','AS${asn}')">ROA Suggestor</button> to verify propagation.</div>
+    </div>
+  </div>`);
+}
+</script>
+</body>
+</html>
